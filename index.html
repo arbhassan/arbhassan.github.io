@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  @page { size: A4; margin: 0; }
+  @page { size: 210mm 480mm; margin: 0; }
 
   html, body {
     margin: 0;
@@ -20,7 +20,7 @@
     --resume-accent: #183A9E;
     box-sizing: border-box;
     width: 210mm;
-    min-height: 297mm;
+    min-height: 480mm;
     margin: 0 auto;
     padding: 17mm;
     background: #fff;
@@ -124,7 +124,7 @@
 
   a { color: inherit; }
 
-  /* Keep the A4 layout for printing, while making the screen layout fit phones. */
+  /* Keep the A4-width layout for printing, while making the screen layout fit phones. */
   @media screen and (max-width: 700px) {
     html, body { background: #f5f6f8; }
 
@@ -155,7 +155,6 @@
     ul.bullets { padding-left: 1.35rem; }
     ul.skills { columns: 1; padding-left: 1.35rem; }
 
-    /* The desktop spacer markup remains useful for print, but is less wasteful on phones. */
     br { line-height: 1; }
   }
 
@@ -167,7 +166,12 @@
 
   @media print {
     html, body { background: #fff; }
-    #resume-builder-preview { width: 210mm; min-height: 297mm; margin: 0 auto; padding: 17mm; }
+    #resume-builder-preview {
+      width: 210mm;
+      min-height: 480mm;
+      margin: 0 auto;
+      padding: 17mm;
+    }
   }
 </style>
 </head>
@@ -198,7 +202,7 @@
   <br><div class="break-avoid"><div class="entry-title-row"><p class="title">Independent | Remote</p><p class="date">2020–2021</p></div><p class="entry-subtitle">Freelance Software Engineer</p><ul class="bullets"><li><strong>Custom Web Solutions:</strong> Delivered web applications using React, Next.js, Node.js, and PostgreSQL, including payments, REST APIs, and authentication.</li><li><strong>Infrastructure &amp; Collaboration:</strong> Owned schema design, query optimization, hosting, scoping, and client communication.</li></ul></div>
 
   <br><p class="section-header" data-content="EDUCATION">EDUCATION</p><br>
-  <div class="break-avoid"><div class="entry-title-row"><p><span class="bold">University of Engineering &amp; Technology</span>, Peshawar, Pakistan</p><p class="date">2021</p></div><p class="entry-subtitle">Bachelor's Degree in Software Engineering</p></div>
+  <div class="break-avoid"><div class="entry-title-row"><p><span class="bold">University of Engineering &amp; Technology</span>, Peshawar, Pakistan</p><p class="date">2017-2021</p></div><p class="entry-subtitle">Bachelor's Degree in Software Engineering</p></div>
 
   <br><p class="section-header" data-content="CORE SKILLS">CORE SKILLS</p><br>
   <ul class="skills"><li>React</li><li>Next.js</li><li>TypeScript</li><li>Node.js</li><li>Express</li><li>PostgreSQL</li><li>Redis</li><li>AI Integration (OpenAI, Anthropic, ElevenLabs)</li><li>Microservices Architecture</li><li>API Design and Integration</li><li>Software Architecture</li><li>CI/CD &amp; Version Control (Git)</li><li>SaaS &amp; Full Stack Development</li><li>Responsive Web Design</li></ul>
