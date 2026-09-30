@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Arbab Hassan — Resume</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,40 +32,30 @@
     print-color-adjust: exact;
   }
 
-  #resume-builder-preview * {
+  #resume-builder-preview *,
+  #resume-builder-preview *::before,
+  #resume-builder-preview *::after {
     font-family: inherit;
     font-size: 1em;
     line-height: 1.5;
     box-sizing: border-box;
   }
 
-  /* ---------- Header ---------- */
-  .name {
-    text-align: center;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin: 0;
-  }
+  .name { text-align: center; font-weight: 700; text-transform: uppercase; margin: 0; }
 
   .contact-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    white-space: pre;
+    white-space: normal;
+    text-align: center;
+    gap: 0 .35rem;
   }
 
-  .contact-row p {
-    margin: 0;
-    font-style: italic;
-  }
+  .contact-row p { margin: 0; font-style: italic; }
+  .contact-row a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
 
-  .contact-row a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  /* ---------- Section headers ---------- */
   .section-header {
     position: relative;
     margin: 0;
@@ -93,9 +84,7 @@
     background: #000;
   }
 
-  /* ---------- Generic blocks ---------- */
   p { margin: 0; }
-
   .italic { font-style: italic; }
   .bold { font-weight: 700; }
 
@@ -107,38 +96,23 @@
     padding-left: 2rem;
   }
 
-  ul.bullets > li {
+  ul.bullets > li,
+  .break-avoid,
+  ul.skills > li {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  .break-avoid {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  /* ---------- Entry rows ---------- */
   .entry-title-row {
     display: flex;
     justify-content: space-between;
     gap: 2rem;
   }
 
-  .entry-title-row .title {
-    min-width: 0;
-    font-weight: 700;
-  }
+  .entry-title-row .title { min-width: 0; font-weight: 700; }
+  .entry-title-row .date { flex-shrink: 0; white-space: nowrap; }
+  .entry-subtitle { font-style: italic; }
 
-  .entry-title-row .date {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .entry-subtitle {
-    font-style: italic;
-  }
-
-  /* ---------- Skills ---------- */
   ul.skills {
     list-style: disc outside;
     padding-left: 2rem;
@@ -148,164 +122,86 @@
     column-gap: 2rem;
   }
 
-  ul.skills > li {
-    break-inside: avoid;
-    page-break-inside: avoid;
+  a { color: inherit; }
+
+  /* Keep the A4 layout for printing, while making the screen layout fit phones. */
+  @media screen and (max-width: 700px) {
+    html, body { background: #f5f6f8; }
+
+    #resume-builder-preview {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1.25rem 1rem;
+      font-size: 10pt;
+    }
+
+    .name { font-size: 1.35rem; line-height: 1.25; }
+
+    .contact-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: .15rem;
+      margin-top: .35rem;
+    }
+
+    .contact-row span { display: none; }
+    .contact-row p, .contact-row a { overflow-wrap: anywhere; }
+
+    .section-header::before { padding-right: .6rem; }
+    .entry-title-row { align-items: flex-start; gap: .75rem; }
+    .entry-title-row .title { overflow-wrap: anywhere; }
+    .entry-title-row .date { text-align: right; }
+    ul.bullets { padding-left: 1.35rem; }
+    ul.skills { columns: 1; padding-left: 1.35rem; }
+
+    /* The desktop spacer markup remains useful for print, but is less wasteful on phones. */
+    br { line-height: 1; }
   }
 
-  a { color: inherit; }
+  @media screen and (max-width: 420px) {
+    #resume-builder-preview { padding: 1rem .75rem; font-size: 9.5pt; }
+    .entry-title-row { display: block; }
+    .entry-title-row .date { display: block; text-align: left; }
+  }
+
+  @media print {
+    html, body { background: #fff; }
+    #resume-builder-preview { width: 210mm; min-height: 297mm; margin: 0 auto; padding: 17mm; }
+  }
 </style>
 </head>
 <body>
 
 <div id="resume-builder-preview">
-
-  <!-- ================= HEADER ================= -->
   <p class="name">Arbab Hassan</p>
   <div class="contact-row">
-    <p>03059155643</p><span aria-hidden="true">  •  </span>
-    <p>hassanjawad1321@gmail.com</p><span aria-hidden="true">  •  </span>
-    <p><a href="https://www.linkedin.com/in/arbab-hassan-b79ab2216/" target="_blank" rel="noopener noreferrer">https://www.linkedin.com/in/arbab-hassan-b79ab2216/</a></p><span aria-hidden="true">  •  </span>
+    <p>03059155643</p><span aria-hidden="true"> • </span>
+    <p>hassanjawad1321@gmail.com</p><span aria-hidden="true"> • </span>
+    <p><a href="https://www.linkedin.com/in/arbab-hassan-b79ab2216/" target="_blank" rel="noopener noreferrer">https://www.linkedin.com/in/arbab-hassan-b79ab2216/</a></p><span aria-hidden="true"> • </span>
     <p><a href="https://github.com/arbhassan" target="_blank" rel="noopener noreferrer">https://github.com/arbhassan</a></p>
   </div>
 
-  <!-- ================= SUMMARY ================= -->
-  <br>
-  <p class="section-header" data-content="PROFESSIONAL SUMMARY">PROFESSIONAL SUMMARY</p>
-  <br>
-  <p class="italic">Full Stack Engineer specializing in scalable SaaS platforms with advanced AI integration. Skilled in React, Next.js, Node.js, and TypeScript, with strong grounding in software architecture, microservices, and API development.</p>
+  <br><p class="section-header" data-content="PROFESSIONAL SUMMARY">PROFESSIONAL SUMMARY</p><br>
+  <p class="italic">Full Stack Engineer specializing in scalable SaaS platforms with advanced AI integration. Skilled in React, Next.js, Node.js, and TypeScript, with strong grounding in software architecture, APIs, and reliable production systems.</p>
 
-  <!-- ================= PROJECTS ================= -->
-  <br>
-  <p class="section-header" data-content="PROJECTS">PROJECTS</p>
-  <br>
+  <br><p class="section-header" data-content="PROJECTS">PROJECTS</p><br>
+  <div class="break-avoid"><p class="bold">EvyAI (https://evyai.com)</p><ul class="bullets"><li><strong>AI-Powered Automation:</strong> Built a LinkedIn engagement assistant using OpenAI and Anthropic APIs for automated posts, smart comments, and personalized outreach.</li><li><strong>Prompt &amp; Reliability Engineering:</strong> Kept prompts under 1,000 tokens using dynamic few-shot learning and context pruning; enforced strict JSON schemas with model fallbacks.</li><li><strong>Full-Stack Delivery:</strong> Built the React/Next.js frontend, browser extension, and Node.js microservices with PostgreSQL.</li></ul></div>
+  <br><div class="break-avoid"><p class="bold">Neurolingo (neurolingo.co)</p><ul class="bullets"><li><strong>AI Language Platform:</strong> Architected an AI-driven app using Next.js, Node.js, and TypeScript to generate adaptive quizzes, contextual examples, and real-time grammar feedback.</li><li><strong>Infrastructure:</strong> Built spaced-repetition queues backed by PostgreSQL and Redis for fast progress and flashcard caching.</li></ul></div>
+  <br><div class="break-avoid"><p class="bold">Scholarly AI (https://scholarlytraining.com/)</p><ul class="bullets"><li><strong>AI Voice Integration:</strong> Built interactive apps using ElevenLabs and OpenAI Audio for real-time spoken instructions and low-latency voice streaming.</li><li><strong>Gamified UX:</strong> Designed Framer Motion/Lottie animations and cross-device interfaces optimized for low-bandwidth school networks.</li></ul></div>
+  <br><div class="break-avoid"><p class="bold">Indie Music Academy (https://portal.indiemusicacademy.com)</p><ul class="bullets"><li><strong>Client Portal Architecture:</strong> Built a private artist dashboard tracking campaign momentum, deliverables, and performance analytics.</li><li><strong>APIs &amp; Visualization:</strong> Aggregated Spotify/TikTok metrics into PostgreSQL with Redis caching and responsive Tailwind CSS charts.</li></ul></div>
 
-  <div class="break-avoid">
-    <p class="bold">EvyAI (https://evyai.com)</p>
-    <ul class="bullets">
-      <li><strong>AI-Powered Automation:</strong> Built a LinkedIn engagement assistant using OpenAI (GPT-4/3.5) and Anthropic (Claude) APIs for automated posts, smart comments, and personalized outreach.</li>
-      <li><strong>Prompt &amp; Reliability Engineering:</strong> Kept prompts under 1,000 tokens via dynamic few-shot learning and context pruning; enforced strict JSON schemas with automated model fallbacks to eliminate rate-limit downtime.</li>
-      <li><strong>Full-Stack Delivery:</strong> Built the React/Next.js frontend, browser extension, and Node.js microservices with PostgreSQL for user personas and templates.</li>
-    </ul>
-  </div>
+  <br><p class="section-header" data-content="WORK EXPERIENCE">WORK EXPERIENCE</p><br>
+  <div class="break-avoid"><div class="entry-title-row"><p class="title">Scholarly AI | Singapore</p><p class="date">2025–2026</p></div><p class="entry-subtitle">Full Stack Engineer</p><ul class="bullets"><li><strong>AI Educational Tools:</strong> Built learning apps integrating OpenAI and ElevenLabs for interactive problem-solving, voice feedback, and personalized tutoring.</li><li><strong>Scalable Backends:</strong> Scaled Node.js/TypeScript microservices and queued AI requests with RabbitMQ/Redis, WebSockets, and SSE.</li></ul></div>
+  <br><div class="break-avoid"><div class="entry-title-row"><p class="title">EvyAI | USA</p><p class="date">2023–2024</p></div><p class="entry-subtitle">Full Stack Engineer</p><ul class="bullets"><li><strong>AI Automation:</strong> Built a LinkedIn engagement tool on OpenAI and Anthropic APIs; pruned prompts under 1,000 tokens to reduce latency and costs.</li><li><strong>System Reliability:</strong> Enforced JSON schemas and model fallbacks while shipping React/Next.js interfaces, a Chrome extension, and Node.js/PostgreSQL services.</li></ul></div>
+  <br><div class="break-avoid"><div class="entry-title-row"><p class="title">Indie Music Academy | USA</p><p class="date">2021–2022</p></div><p class="entry-subtitle">Full Stack Engineer</p><ul class="bullets"><li><strong>Artist Client Portal:</strong> Built a React/Next.js/Node.js dashboard integrating Spotify and TikTok APIs.</li><li><strong>Analytics &amp; Caching:</strong> Aggregated metrics into PostgreSQL with Redis caching and responsive Tailwind CSS dashboards.</li></ul></div>
+  <br><div class="break-avoid"><div class="entry-title-row"><p class="title">Independent | Remote</p><p class="date">2020–2021</p></div><p class="entry-subtitle">Freelance Software Engineer</p><ul class="bullets"><li><strong>Custom Web Solutions:</strong> Delivered web applications using React, Next.js, Node.js, and PostgreSQL, including payments, REST APIs, and authentication.</li><li><strong>Infrastructure &amp; Collaboration:</strong> Owned schema design, query optimization, hosting, scoping, and client communication.</li></ul></div>
 
-  <br>
-  <div class="break-avoid">
-    <p class="bold">Neurolingo (neurolingo.co)</p>
-    <ul class="bullets">
-      <li><strong>AI Language Platform:</strong> Architected an AI-driven app (Next.js, Node.js, TypeScript) using LLMs to generate adaptive quizzes, contextual examples, and real-time grammar feedback.</li>
-      <li><strong>Infrastructure:</strong> Built spaced-repetition recall queues with sub-second response times, backed by PostgreSQL for progress tracking and Redis for session and flashcard caching.</li>
-    </ul>
-  </div>
+  <br><p class="section-header" data-content="EDUCATION">EDUCATION</p><br>
+  <div class="break-avoid"><div class="entry-title-row"><p><span class="bold">University of Engineering &amp; Technology</span>, Peshawar, Pakistan</p><p class="date">2021</p></div><p class="entry-subtitle">Bachelor's Degree in Software Engineering</p></div>
 
-  <br>
-  <div class="break-avoid">
-    <p class="bold">Scholarly AI (https://scholarlytraining.com/)</p>
-    <ul class="bullets">
-      <li><strong>AI Voice Integration:</strong> Built interactive apps using ElevenLabs/OpenAI Audio for real-time spoken instructions and low-latency voice streaming (Node.js, React/Next.js).</li>
-      <li><strong>Gamified UX:</strong> Designed Framer Motion/Lottie animations synced to audio and cross-device gamified interfaces optimized for low-bandwidth school networks.</li>
-    </ul>
-  </div>
-
-  <br>
-  <div class="break-avoid">
-    <p class="bold">Indie Music Academy (https://portal.indiemusicacademy.com)</p>
-    <ul class="bullets">
-      <li><strong>Client Portal Architecture:</strong> Built a private artist dashboard (React, Next.js, Node.js, TypeScript) tracking campaign momentum, deliverables, and performance analytics.</li>
-      <li><strong>APIs &amp; Visualization:</strong> Aggregated Spotify/TikTok metrics into PostgreSQL via REST APIs with Redis caching, and designed responsive Tailwind CSS charts for non-technical users.</li>
-    </ul>
-  </div>
-
-  <!-- ================= WORK EXPERIENCE ================= -->
-  <br>
-  <p class="section-header" data-content="WORK EXPERIENCE">WORK EXPERIENCE</p>
-  <br>
-
-  <div class="break-avoid">
-    <div class="entry-title-row">
-      <p class="title">Scholarly AI | Singapore</p>
-      <p class="date">2025–2026</p>
-    </div>
-    <p class="entry-subtitle">Full Stack Engineer</p>
-    <ul class="bullets">
-      <li><strong>AI Educational Tools:</strong> Built student-facing learning apps integrating OpenAI and ElevenLabs APIs for interactive problem-solving, voice feedback, and personalized tutoring.</li>
-      <li><strong>Scalable Backends:</strong> Scaled Node.js/TypeScript microservices for concurrent student traffic; offloaded heavy AI requests to RabbitMQ/Redis queues with real-time WebSocket/SSE streaming.</li>
-    </ul>
-  </div>
-
-  <br>
-  <div class="break-avoid">
-    <div class="entry-title-row">
-      <p class="title">EvyAI | USA</p>
-      <p class="date">2023–2024</p>
-    </div>
-    <p class="entry-subtitle">Full Stack Engineer</p>
-    <ul class="bullets">
-      <li><strong>AI Automation:</strong> Built a LinkedIn engagement tool on OpenAI and Anthropic APIs; pruned prompts under 1,000 tokens to cut latency and API costs.</li>
-      <li><strong>System Reliability:</strong> Enforced strict JSON schemas and automated model fallbacks, and shipped React/Next.js interfaces, a Chrome extension, and Node.js/PostgreSQL microservices.</li>
-    </ul>
-  </div>
-
-  <br>
-  <div class="break-avoid">
-    <div class="entry-title-row">
-      <p class="title">Indie Music Academy | USA</p>
-      <p class="date">2021–2022</p>
-    </div>
-    <p class="entry-subtitle">Full Stack Engineer</p>
-    <ul class="bullets">
-      <li><strong>Artist Client Portal:</strong> Built a tracking dashboard (React, Next.js, Node.js) integrating <strong>Spotify and TikTok APIs</strong> for real-time playlist, follower, and campaign metrics.</li>
-      <li><strong>Analytics &amp; Caching:</strong> Aggregated metrics into PostgreSQL with <strong>Redis caching</strong> for fast rendering, plus responsive Tailwind CSS dashboards and exportable reports.</li>
-    </ul>
-  </div>
-
-  <br>
-  <div class="break-avoid">
-    <div class="entry-title-row">
-      <p class="title">Independent | Remote</p>
-      <p class="date">2020–2021</p>
-    </div>
-    <p class="entry-subtitle">Freelance Software Engineer</p>
-    <ul class="bullets">
-      <li><strong>Custom Web Solutions:</strong> Delivered end-to-end web applications using React, Next.js, Node.js, and PostgreSQL, including payment gateways, third-party REST APIs, and authentication flows.</li>
-      <li><strong>Infrastructure &amp; Collaboration:</strong> Owned schema design, query optimization, and hosting (Vercel, AWS) while managing requirements, scoping, and client communication.</li>
-    </ul>
-  </div>
-
-  <!-- ================= EDUCATION ================= -->
-  <br>
-  <p class="section-header" data-content="EDUCATION">EDUCATION</p>
-  <br>
-  <div class="break-avoid">
-    <div class="entry-title-row">
-      <p><span class="bold">University of Engineering &amp; Technology</span>, Peshawar, Pakistan</p>
-      <p class="date">2021</p>
-    </div>
-    <p class="entry-subtitle">Bachelor's Degree in Software Engineering</p>
-  </div>
-
-  <!-- ================= CORE SKILLS ================= -->
-  <br>
-  <p class="section-header" data-content="CORE SKILLS">CORE SKILLS</p>
-  <br>
-  <ul class="skills">
-    <li>React</li>
-    <li>Next.js</li>
-    <li>TypeScript</li>
-    <li>Node.js</li>
-    <li>Express</li>
-    <li>PostgreSQL</li>
-    <li>Redis</li>
-    <li>AI Integration (OpenAI, Anthropic, ElevenLabs)</li>
-    <li>Microservices Architecture</li>
-    <li>API Design and Integration</li>
-    <li>Software Architecture</li>
-    <li>CI/CD &amp; Version Control (Git)</li>
-    <li>SaaS &amp; Full Stack Development</li>
-    <li>Responsive Web Design</li>
-  </ul>
-
+  <br><p class="section-header" data-content="CORE SKILLS">CORE SKILLS</p><br>
+  <ul class="skills"><li>React</li><li>Next.js</li><li>TypeScript</li><li>Node.js</li><li>Express</li><li>PostgreSQL</li><li>Redis</li><li>AI Integration (OpenAI, Anthropic, ElevenLabs)</li><li>Microservices Architecture</li><li>API Design and Integration</li><li>Software Architecture</li><li>CI/CD &amp; Version Control (Git)</li><li>SaaS &amp; Full Stack Development</li><li>Responsive Web Design</li></ul>
 </div>
-
 </body>
 </html>
