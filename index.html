@@ -48,20 +48,46 @@
 
   .contact-row {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .contact-line {
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    white-space: pre;
+    gap: 0.25rem 0.6rem;
   }
 
-  .contact-row p {
-    margin: 0;
+  .contact-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    white-space: nowrap;
+    font-style: normal;
+  }
+
+  .contact-label {
     font-style: italic;
+    color: #333;
+  }
+
+  .contact-sep {
+    color: #555;
   }
 
   .contact-row a {
     color: inherit;
     text-decoration: none;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.3);
+  }
+
+  .contact-row a:hover {
+    text-decoration: underline;
   }
 
   /* ---------- Section headers ---------- */
@@ -162,11 +188,29 @@
 
   <!-- ================= HEADER ================= -->
   <p class="name">Arbab Hassan</p>
+
   <div class="contact-row">
-    <p>03059155643</p><span aria-hidden="true">  •  </span>
-    <p>hassanjawad1321@gmail.com</p><span aria-hidden="true">  •  </span>
-    <p><a href="https://www.linkedin.com/in/arbab-hassan-b79ab2216/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p><span aria-hidden="true">  •  </span>
-    <p><a href="https://github.com/arbhassan" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+    <div class="contact-line">
+      <span class="contact-item">
+        <a href="tel:03059155643">03059155643</a>
+      </span>
+      <span class="contact-sep" aria-hidden="true">•</span>
+      <span class="contact-item">
+        <a href="mailto:hassanjawad1321@gmail.com">hassanjawad1321@gmail.com</a>
+      </span>
+    </div>
+
+    <div class="contact-line">
+      <span class="contact-item">
+        <span class="contact-label">LinkedIn:</span>
+        <a href="https://www.linkedin.com/in/arbab-hassan-b79ab2216/" target="_blank" rel="noopener noreferrer">https://www.linkedin.com/in/arbab-hassan-b79ab2216/</a>
+      </span>
+      <span class="contact-sep" aria-hidden="true">•</span>
+      <span class="contact-item">
+        <span class="contact-label">GitHub:</span>
+        <a href="https://github.com/arbhassan" target="_blank" rel="noopener noreferrer">https://github.com/arbhassan</a>
+      </span>
+    </div>
   </div>
 
   <!-- ================= SUMMARY ================= -->
@@ -183,9 +227,9 @@
   <div class="break-avoid">
     <p class="bold">EvyAI (https://evyai.com)</p>
     <ul class="bullets">
-      <li><strong>AI-Powered Sales Assistant:</strong> Built "evyAI," a LinkedIn Chrome extension and web app using OpenAI and Anthropic APIs to dynamically generate smart comments, craft posts, and enrich B2B connection data, acting as a 10x productivity multiplier for sales teams.</li>
-      <li><strong>Prompt & Reliability Engineering:</strong> Kept prompts under 1,000 tokens via dynamic few-shot learning, reducing API costs by 40% and cutting latency by 1.5 seconds. Enforced strict JSON schemas with automated fallbacks to maintain 99.9% uptime.</li>
-      <li><strong>Full-Stack Delivery & Data Security:</strong> Shipped the React/Next.js frontend and containerized Node.js/PostgreSQL microservices (Docker/AWS). Engineered secure data pipelines to manage custom user personas and track connection activity safely.</li>
+      <li>AI-Powered Sales Assistant: Built "evyAI," a LinkedIn Chrome extension and web app using OpenAI and Anthropic APIs to dynamically generate smart comments, craft posts, and enrich B2B connection data, acting as a 10x productivity multiplier for sales teams.</li>
+      <li>Prompt & Reliability Engineering: Kept prompts under 1,000 tokens via dynamic few-shot learning, reducing API costs by 40% and cutting latency by 1.5 seconds. Enforced strict JSON schemas with automated fallbacks to maintain 99.9% uptime.</li>
+      <li>Full-Stack Delivery & Data Security: Shipped the React/Next.js frontend and containerized Node.js/PostgreSQL microservices (Docker/AWS). Engineered secure data pipelines to manage custom user personas and track connection activity safely.</li>
     </ul>
   </div>
 
@@ -193,8 +237,8 @@
   <div class="break-avoid">
     <p class="bold">Neurolingo (https://neurolingo.co)</p>
     <ul class="bullets">
-      <li><strong>AI Language Platform & RAG:</strong> Architected an AI-driven app leveraging RAG pipelines and vector databases to generate adaptive quizzes, contextual examples, and highly accurate grammar feedback.</li>
-      <li><strong>Scalable Infrastructure:</strong> Engineered spaced-repetition recall queues with sub-second response times, backed by PostgreSQL and Redis, ensuring high availability under peak user loads.</li>
+      <li>AI Language Platform & RAG: Architected an AI-driven app leveraging RAG pipelines and vector databases to generate adaptive quizzes, contextual examples, and highly accurate grammar feedback.</li>
+      <li>Scalable Infrastructure: Engineered spaced-repetition recall queues with sub-second response times, backed by PostgreSQL and Redis, ensuring high availability under peak user loads.</li>
     </ul>
   </div>
 
@@ -202,8 +246,8 @@
   <div class="break-avoid">
     <p class="bold">Scholarly AI (https://scholarlytraining.com/)</p>
     <ul class="bullets">
-      <li><strong>AI Voice & WebSocket Streaming:</strong> Built interactive apps using ElevenLabs/OpenAI Audio for real-time spoken instructions, routing audio via WebSocket/SSE streaming for instantaneous playback.</li>
-      <li><strong>Gamified UX & Global Delivery:</strong> Designed Framer Motion animations synced to audio and optimized interfaces for low-bandwidth environments, utilizing CDN distribution for accelerated global access.</li>
+      <li>AI Voice & WebSocket Streaming: Built interactive apps using ElevenLabs/OpenAI Audio for real-time spoken instructions, routing audio via WebSocket/SSE streaming for instantaneous playback.</li>
+      <li>Gamified UX & Global Delivery: Designed Framer Motion animations synced to audio and optimized interfaces for low-bandwidth environments, utilizing CDN distribution for accelerated global access.</li>
     </ul>
   </div>
 
@@ -211,8 +255,8 @@
   <div class="break-avoid">
     <p class="bold">Indie Music Academy (https://portal.indiemusicacademy.com)</p>
     <ul class="bullets">
-      <li><strong>Client Portal Architecture:</strong> Built a private artist dashboard supporting thousands of active users, tracking campaign momentum, deliverables, and performance analytics.</li>
-      <li><strong>Data Pipelines & Visualization:</strong> Aggregated high-volume Spotify/TikTok metric events into PostgreSQL via REST APIs. Optimized read operations with Redis caching and designed responsive Tailwind CSS charts for non-technical stakeholders.</li>
+      <li>Client Portal Architecture: Built a private artist dashboard supporting thousands of active users, tracking campaign momentum, deliverables, and performance analytics.</li>
+      <li>Data Pipelines & Visualization: Aggregated high-volume Spotify/TikTok metric events into PostgreSQL via REST APIs. Optimized read operations with Redis caching and designed responsive Tailwind CSS charts for non-technical stakeholders.</li>
     </ul>
   </div>
 
@@ -228,8 +272,8 @@
     </div>
     <p class="entry-subtitle">Full Stack Engineer</p>
     <ul class="bullets">
-      <li><strong>AI Educational Tools:</strong> Built secure, student-facing learning apps integrating OpenAI and ElevenLabs APIs for interactive problem-solving and personalized, voice-assisted tutoring.</li>
-      <li><strong>Scalable Backends:</strong> Scaled Node.js/TypeScript microservices to support over 10,000 concurrent student connections; offloaded intensive AI processing to RabbitMQ/Redis queues to ensure zero dropped payloads.</li>
+      <li>AI Educational Tools: Built secure, student-facing learning apps integrating OpenAI and ElevenLabs APIs for interactive problem-solving and personalized, voice-assisted tutoring.</li>
+      <li>Scalable Backends: Scaled Node.js/TypeScript microservices to support over 10,000 concurrent student connections; offloaded intensive AI processing to RabbitMQ/Redis queues to ensure zero dropped payloads.</li>
     </ul>
   </div>
 
@@ -241,8 +285,8 @@
     </div>
     <p class="entry-subtitle">Full Stack Engineer</p>
     <ul class="bullets">
-      <li><strong>AI Sales Platform & LLMOps:</strong> Engineered a comprehensive B2B productivity platform (Chrome extension & web app) on OpenAI and Anthropic APIs to automate content creation and connection enrichment; pruned prompts under 1,000 tokens to slash latency and API overhead.</li>
-      <li><strong>Architecture & User Management:</strong> Maintained enterprise-grade system stability by enforcing strict JSON schemas. Deployed robust Node.js and PostgreSQL architectures to handle custom user personas and real-time sales activity monitoring.</li>
+      <li>AI Sales Platform & LLMOps: Engineered a comprehensive B2B productivity platform (Chrome extension & web app) on OpenAI and Anthropic APIs to automate content creation and connection enrichment; pruned prompts under 1,000 tokens to slash latency and API overhead.</li>
+      <li>Architecture & User Management: Maintained enterprise-grade system stability by enforcing strict JSON schemas. Deployed robust Node.js and PostgreSQL architectures to handle custom user personas and real-time sales activity monitoring.</li>
     </ul>
   </div>
 
@@ -254,8 +298,8 @@
     </div>
     <p class="entry-subtitle">Full Stack Engineer</p>
     <ul class="bullets">
-      <li><strong>Artist Client Portal:</strong> Developed a dynamic tracking dashboard integrating <strong>Spotify and TikTok APIs</strong> to process and visualize real-time playlist, follower, and campaign analytics at scale.</li>
-      <li><strong>Analytics & Caching:</strong> Streamlined data pipelines into PostgreSQL using <strong>Redis caching</strong> to achieve fast rendering speeds for responsive, exportable reporting dashboards.</li>
+      <li>Artist Client Portal: Developed a dynamic tracking dashboard integrating Spotify and TikTok APIs to process and visualize real-time playlist, follower, and campaign analytics at scale.</li>
+      <li>Analytics & Caching: Streamlined data pipelines into PostgreSQL using Redis caching to achieve fast rendering speeds for responsive, exportable reporting dashboards.</li>
     </ul>
   </div>
 
@@ -267,8 +311,8 @@
     </div>
     <p class="entry-subtitle">Freelance Software Engineer</p>
     <ul class="bullets">
-      <li><strong>Custom FinTech & Web Solutions:</strong> Delivered custom web applications and sophisticated charting dashboards integrating Smart Money Concepts and real-time algorithmic risk modeling.</li>
-      <li><strong>Infrastructure & Collaboration:</strong> Directed end-to-end project lifecycles encompassing schema design, query optimization, secure authentication flows, and AWS/Vercel hosting while managing tight client communication.</li>
+      <li>Custom FinTech & Web Solutions: Delivered custom web applications and sophisticated charting dashboards integrating Smart Money Concepts and real-time algorithmic risk modeling.</li>
+      <li>Infrastructure & Collaboration: Directed end-to-end project lifecycles encompassing schema design, query optimization, secure authentication flows, and AWS/Vercel hosting while managing tight client communication.</li>
     </ul>
   </div>
 
