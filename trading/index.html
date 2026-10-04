@@ -141,24 +141,6 @@ nav{
    ============================================================ */
 .hero{padding:110px 0 80px;text-align:center;position:relative}
 @media(max-width:720px){.hero{padding:64px 0 44px}}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:9px;
-  font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--gold);
-  border:1px solid rgba(227,179,65,.3);
-  background:var(--gold-dim);
-  padding:7px 16px;border-radius:999px;margin-bottom:30px;
-}
-.eyebrow .dot{
-  width:6px;height:6px;border-radius:50%;background:var(--gold);
-  box-shadow:0 0 0 0 rgba(227,179,65,.7);
-  animation:pulse 2.2s infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(227,179,65,.7)}
-  70%{box-shadow:0 0 0 10px rgba(227,179,65,0)}
-  100%{box-shadow:0 0 0 0 rgba(227,179,65,0)}
-}
 h1{
   font-size:clamp(2.5rem,6.6vw,4.6rem);
   line-height:1.03;font-weight:900;letter-spacing:-.045em;
@@ -525,7 +507,6 @@ footer{
 <!-- ================= HERO ================= -->
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow"><span class="dot"></span> Discretionary Liquidity Model</div>
     <h1>
       The <span class="grad">Arbab Hassan</span> Model
       <span class="ghost">HTF Narrative → Sweep → CISD → Target</span>
@@ -744,13 +725,13 @@ footer{
     <div class="sec-head reveal">
       <div class="sec-tag">Case Study</div>
       <h2>Anatomy of an A+ trade</h2>
-      <p>EURUSD · August 24 · Short · +2.5R. A textbook run of the model from narrative to target.</p>
+      <p>XAUUSD · August 6 · Long · +4.09R. The trader's own words: "My A+ setup that I would take any time of the day."</p>
     </div>
 
     <div class="anatomy reveal">
       <div class="anatomy-head">
-        <h3>EURUSD — H4 + H1 Bearish Overlap</h3>
-        <span class="badge-win">+2.50R · WIN</span>
+        <h3>XAUUSD — H4 + H1 Bullish Overlap</h3>
+        <span class="badge-win">+4.09R · WIN</span>
       </div>
 
       <div class="flow">
@@ -758,7 +739,7 @@ footer{
           <div class="flow-num">01</div>
           <div>
             <h4>Narrative</h4>
-            <p>H4 Order Block + H1 Swing High. Both timeframes bearish.</p>
+            <p>H4 Bullish FVG + H1 Swing Low. Both timeframes bullish.</p>
           </div>
         </div>
         <div class="flow-step">
@@ -772,31 +753,31 @@ footer{
           <div class="flow-num">03</div>
           <div>
             <h4>Sweep</h4>
-            <p>15m stop run above the old 15m order block.</p>
+            <p>Liquidity taken below the H1 swing low at the FVG.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">04</div>
           <div>
             <h4>Trigger</h4>
-            <p>5m OB formed inside the co-existing 15m OB. 15m CISD confirmed.</p>
+            <p>15m CISD confirmed. Entry at the H4 FVG with H1 confluence.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">05</div>
           <div>
             <h4>Result</h4>
-            <p>Short entered, target hit at +2.5R.</p>
+            <p>Long entered, target hit at +4.09R.</p>
           </div>
         </div>
       </div>
 
       <div style="margin-top:34px;padding-top:26px;border-top:1px solid rgba(227,179,65,.16)">
         <p style="font-size:.9rem;color:var(--muted);font-style:italic;line-height:1.75">
-          "Getting another entry inside old 15m OB through a 15m stop run, then 5m OB inside the co-existing 15m OB — so trade idea still valid for me. Overall high conviction, however the stop placement is a little scary."
+          "Very high conviction, waited for this setup the entire day. My A+ setup that I would take any time of the day. No emotion setting me back from taking this trade whatsoever."
         </p>
         <p style="font-size:.78rem;color:var(--muted-2);margin-top:12px">
-          Note: even on a winner, the trader flagged discomfort with the stop. That is exactly the kind of self-observation the journal is designed to surface.
+          Note: this is the model at its purest — HTF FVG, H1 swing low, sweep, 15m CISD, and complete emotional neutrality. The trade was prepared, waited for, and executed without negotiation.
         </p>
       </div>
     </div>
