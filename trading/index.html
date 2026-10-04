@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbab Hassan's Model — Liquidity Sweep → CISD Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg:#07090d;
+  --bg-2:#0b0f16;
+  --panel:rgba(255,255,255,.028);
+  --panel-2:rgba(255,255,255,.045);
+  --stroke:rgba(255,255,255,.085);
+  --stroke-2:rgba(255,255,255,.14);
+
+  --gold:#e3b341;
+  --gold-2:#f5d67b;
+  --gold-dim:rgba(227,179,65,.14);
+
+  --green:#3ddc97;
+  --green-dim:rgba(61,220,151,.13);
+  --red:#ff5f6d;
+  --red-dim:rgba(255,95,109,.13);
+  --amber:#ffb454;
+  --blue:#5aa9ff;
+  --violet:#a78bfa;
+
+  --text:#eef2f7;
+  --muted:#8b96a8;
+  --muted-2:#5f6b7e;
+
+  --r-sm:10px;
+  --r:16px;
+  --r-lg:24px;
+  --r-xl:32px;
+
+  --maxw:1180px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  letter-spacing:-.011em;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(900px 600px at 12% -8%, rgba(227,179,65,.10), transparent 60%),
+    radial-gradient(800px 600px at 88% 4%, rgba(90,169,255,.09), transparent 62%),
+    radial-gradient(1000px 800px at 50% 110%, rgba(61,220,151,.07), transparent 60%);
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 30%, #000 20%, transparent 100%);
+  pointer-events:none;z-index:0;
+}
+::selection{background:var(--gold);color:#0a0a0a}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#0a0d13}
+::-webkit-scrollbar-thumb{background:#242b38;border-radius:20px;border:2px solid #0a0d13}
+::-webkit-scrollbar-thumb:hover{background:#333c4d}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px;position:relative;z-index:1}
+section{padding:92px 0;position:relative;z-index:1}
+@media(max-width:720px){section{padding:64px 0}}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+#progress{
+  position:fixed;top:0;left:0;height:2px;width:0%;
+  background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--green));
+  z-index:1000;transition:width .1s linear;
+  box-shadow:0 0 14px rgba(227,179,65,.55);
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+nav{
+  position:sticky;top:0;z-index:900;
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  background:rgba(7,9,13,.72);
+  border-bottom:1px solid var(--stroke);
+}
+.nav-in{
+  max-width:var(--maxw);margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.02em;font-size:15px}
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(140deg,var(--gold),#b8860b);
+  display:grid;place-items:center;color:#0a0a0a;font-weight:900;font-size:13px;
+  box-shadow:0 4px 18px rgba(227,179,65,.32);
+}
+.brand span{color:var(--muted);font-weight:500}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap}
+.nav-links a{
+  font-size:13px;font-weight:500;color:var(--muted);
+  padding:7px 13px;border-radius:999px;transition:.25s var(--ease);
+}
+.nav-links a:hover{color:var(--text);background:var(--panel-2)}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{padding:110px 0 80px;text-align:center;position:relative}
+@media(max-width:720px){.hero{padding:64px 0 44px}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);
+  border:1px solid rgba(227,179,65,.3);
+  background:var(--gold-dim);
+  padding:7px 16px;border-radius:999px;margin-bottom:30px;
+}
+.eyebrow .dot{
+  width:6px;height:6px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 0 0 rgba(227,179,65,.7);
+  animation:pulse 2.2s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(227,179,65,.7)}
+  70%{box-shadow:0 0 0 10px rgba(227,179,65,0)}
+  100%{box-shadow:0 0 0 0 rgba(227,179,65,0)}
+}
+h1{
+  font-size:clamp(2.5rem,6.6vw,4.6rem);
+  line-height:1.03;font-weight:900;letter-spacing:-.045em;
+  margin-bottom:26px;
+}
+h1 .grad{
+  background:linear-gradient(100deg,var(--gold-2) 0%,var(--gold) 38%,#b8860b 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+h1 .ghost{
+  display:block;font-size:.44em;font-weight:600;letter-spacing:-.02em;
+  color:var(--muted);margin-top:18px;
+}
+.lede{
+  max-width:660px;margin:0 auto;color:var(--muted);
+  font-size:clamp(1rem,1.7vw,1.13rem);line-height:1.75;
+}
+.hero-cta{display:flex;gap:12px;justify-content:center;margin-top:40px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:13px 26px;border-radius:999px;font-size:14px;font-weight:600;
+  transition:.28s var(--ease);border:1px solid transparent;cursor:pointer;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold-2),var(--gold));
+  color:#0a0a0a;box-shadow:0 8px 28px rgba(227,179,65,.26);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(227,179,65,.38)}
+.btn-ghost{border-color:var(--stroke-2);color:var(--text);background:var(--panel)}
+.btn-ghost:hover{background:var(--panel-2);transform:translateY(-2px);border-color:var(--gold)}
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.sec-head{margin-bottom:52px;max-width:720px}
+.sec-tag{
+  font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;
+}
+.sec-tag::before{content:'';width:26px;height:1.5px;background:var(--gold);border-radius:2px}
+h2{
+  font-size:clamp(1.7rem,3.7vw,2.6rem);font-weight:800;letter-spacing:-.035em;
+  line-height:1.14;margin-bottom:16px;
+}
+.sec-head p{color:var(--muted);font-size:1rem;line-height:1.72}
+
+/* ============================================================
+   GLOSSARY CARDS
+   ============================================================ */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:var(--r-lg);
+  padding:28px 26px;
+  transition:.35s var(--ease);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(400px 200px at 50% -30%,rgba(227,179,65,.11),transparent 70%);
+  opacity:0;transition:.4s var(--ease);pointer-events:none;
+}
+.card:hover{transform:translateY(-5px);border-color:var(--stroke-2);background:var(--panel-2)}
+.card:hover::before{opacity:1}
+.card-ico{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  font-size:19px;margin-bottom:18px;
+  background:var(--gold-dim);border:1px solid rgba(227,179,65,.22);
+}
+.card h3{font-size:1.02rem;font-weight:700;margin-bottom:9px;letter-spacing:-.02em}
+.card p{font-size:.885rem;color:var(--muted);line-height:1.68}
+.card .tagline{
+  display:inline-block;margin-top:14px;font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;color:var(--gold);background:var(--gold-dim);
+  padding:3px 10px;border-radius:6px;border:1px solid rgba(227,179,65,.2);
+}
+
+/* ============================================================
+   PHASE TIMELINE
+   ============================================================ */
+.timeline{position:relative;padding-left:0}
+.phase{
+  display:grid;grid-template-columns:78px 1fr;gap:26px;
+  padding-bottom:38px;position:relative;
+}
+.phase:last-child{padding-bottom:0}
+.phase-num{
+  width:56px;height:56px;border-radius:18px;
+  background:linear-gradient(150deg,rgba(227,179,65,.16),rgba(227,179,65,.04));
+  border:1px solid rgba(227,179,65,.28);
+  display:grid;place-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--gold);
+  position:relative;z-index:2;flex-shrink:0;
+  transition:.35s var(--ease);
+}
+.phase:hover .phase-num{
+  background:linear-gradient(150deg,var(--gold),#b8860b);
+  color:#0a0a0a;transform:scale(1.06);
+  box-shadow:0 8px 26px rgba(227,179,65,.3);
+}
+.phase::after{
+  content:'';position:absolute;left:27px;top:60px;bottom:0;width:1.5px;
+  background:linear-gradient(180deg,rgba(227,179,65,.32),rgba(227,179,65,.04));
+}
+.phase:last-child::after{display:none}
+.phase-body{
+  background:var(--panel);border:1px solid var(--stroke);
+  border-radius:var(--r-lg);padding:26px 28px;
+  transition:.35s var(--ease);
+}
+.phase:hover .phase-body{border-color:var(--stroke-2);background:var(--panel-2)}
+.phase-body h3{font-size:1.12rem;font-weight:750;margin-bottom:6px;letter-spacing:-.025em}
+.phase-sub{font-size:.8rem;color:var(--gold);font-weight:600;margin-bottom:14px;letter-spacing:.02em}
+.phase-body p{font-size:.9rem;color:var(--muted);line-height:1.72;margin-bottom:14px}
+.phase-body p:last-child{margin-bottom:0}
+.phase-body ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.phase-body li{
+  font-size:.885rem;color:var(--muted);line-height:1.6;
+  padding-left:22px;position:relative;
+}
+.phase-body li::before{
+  content:'';position:absolute;left:2px;top:9px;
+  width:6px;height:6px;border-radius:2px;
+  background:var(--gold);opacity:.75;
+}
+.phase-body li strong{color:var(--text);font-weight:600}
+@media(max-width:640px){
+  .phase{grid-template-columns:48px 1fr;gap:16px}
+  .phase-num{width:44px;height:44px;border-radius:14px;font-size:15px}
+  .phase::after{left:21px;top:48px}
+  .phase-body{padding:20px 18px}
+}
+
+/* ============================================================
+   CHECKLIST
+   ============================================================ */
+.check-shell{
+  display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;
+}
+@media(max-width:940px){.check-shell{grid-template-columns:1fr}}
+
+.check-list{
+  background:var(--panel);border:1px solid var(--stroke);
+  border-radius:var(--r-lg);padding:14px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.check-item{
+  display:flex;align-items:center;gap:15px;
+  padding:15px 16px;border-radius:var(--r);
+  cursor:pointer;transition:.22s var(--ease);
+  user-select:none;border:1px solid transparent;
+}
+.check-item:hover{background:var(--panel-2)}
+.check-item.on{background:rgba(61,220,151,.07);border-color:rgba(61,220,151,.22)}
+.box{
+  width:22px;height:22px;border-radius:7px;flex-shrink:0;
+  border:1.8px solid #3a4353;display:grid;place-items:center;
+  transition:.22s var(--ease);position:relative;
+}
+.check-item.on .box{
+  background:var(--green);border-color:var(--green);
+  box-shadow:0 0 16px rgba(61,220,151,.4);
+}
+.box svg{width:12px;height:12px;opacity:0;transform:scale(.4);transition:.22s var(--ease)}
+.check-item.on .box svg{opacity:1;transform:scale(1)}
+.check-text{font-size:.92rem;font-weight:500;color:var(--muted);transition:.22s var(--ease)}
+.check-item.on .check-text{color:var(--text)}
+.check-hint{font-size:.74rem;color:var(--muted-2);margin-top:2px;font-weight:400}
+
+.score-panel{
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+  border:1px solid var(--stroke);border-radius:var(--r-lg);
+  padding:30px 26px;position:sticky;top:92px;text-align:center;
+}
+.score-ring{
+  width:140px;height:140px;margin:0 auto 20px;position:relative;
+}
+.score-ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.score-ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.ring-bg{stroke:rgba(255,255,255,.07)}
+.ring-fg{
+  stroke:var(--green);transition:stroke-dashoffset .55s var(--ease), stroke .4s ease;
+  filter:drop-shadow(0 0 8px rgba(61,220,151,.5));
+}
+.score-val{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:2.1rem;font-weight:700;
+  letter-spacing:-.04em;
+}
+.score-val small{font-size:.9rem;color:var(--muted-2);font-weight:500}
+.verdict{
+  font-size:1.02rem;font-weight:750;letter-spacing:-.02em;
+  margin-bottom:9px;transition:.3s var(--ease);
+}
+.verdict-sub{font-size:.83rem;color:var(--muted);line-height:1.6;min-height:42px}
+.reset-btn{
+  margin-top:20px;width:100%;padding:11px;border-radius:12px;
+  background:transparent;border:1px solid var(--stroke-2);color:var(--muted);
+  font-size:.82rem;font-weight:600;cursor:pointer;transition:.25s var(--ease);
+  font-family:inherit;
+}
+.reset-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ============================================================
+   ANATOMY / A+ TRADE
+   ============================================================ */
+.anatomy{
+  background:linear-gradient(160deg,rgba(227,179,65,.07),rgba(255,255,255,.015));
+  border:1px solid rgba(227,179,65,.2);
+  border-radius:var(--r-xl);padding:44px;
+  position:relative;overflow:hidden;
+}
+.anatomy::before{
+  content:'';position:absolute;top:-120px;right:-120px;width:340px;height:340px;
+  background:radial-gradient(circle,rgba(227,179,65,.16),transparent 70%);
+  pointer-events:none;
+}
+.anatomy-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:20px;flex-wrap:wrap;margin-bottom:32px;
+}
+.anatomy-head h3{font-size:1.5rem;font-weight:800;letter-spacing:-.03em}
+.badge-win{
+  font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700;
+  color:var(--green);background:var(--green-dim);
+  border:1px solid rgba(61,220,151,.28);
+  padding:7px 16px;border-radius:999px;
+}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative}
+.flow-step{padding:0 14px;position:relative;text-align:center}
+.flow-step:not(:last-child)::after{
+  content:'';position:absolute;top:19px;right:-6px;width:12px;height:1.5px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+}
+.flow-num{
+  width:38px;height:38px;margin:0 auto 14px;border-radius:12px;
+  background:rgba(7,9,13,.6);border:1px solid rgba(227,179,65,.3);
+  display:grid;place-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;color:var(--gold);
+  position:relative;z-index:2;
+}
+.flow-step h4{font-size:.82rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.flow-step p{font-size:.76rem;color:var(--muted);line-height:1.55}
+@media(max-width:820px){
+  .flow{grid-template-columns:1fr;gap:20px}
+  .flow-step{display:grid;grid-template-columns:38px 1fr;gap:14px;text-align:left;padding:0}
+  .flow-step::after{display:none}
+  .flow-num{margin:0}
+  .anatomy{padding:28px 20px}
+}
+
+/* ============================================================
+   DO / DON'T
+   ============================================================ */
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:780px){.rules{grid-template-columns:1fr}}
+.rule-col{
+  border-radius:var(--r-lg);padding:30px 28px;border:1px solid var(--stroke);
+  background:var(--panel);
+}
+.rule-col.good{border-color:rgba(61,220,151,.22);background:linear-gradient(180deg,rgba(61,220,151,.055),rgba(255,255,255,.012))}
+.rule-col.bad{border-color:rgba(255,95,109,.22);background:linear-gradient(180deg,rgba(255,95,109,.055),rgba(255,255,255,.012))}
+.rule-col h3{
+  font-size:.78rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  margin-bottom:20px;display:flex;align-items:center;gap:10px;
+}
+.rule-col.good h3{color:var(--green)}
+.rule-col.bad h3{color:var(--red)}
+.rule-col ul{list-style:none;display:flex;flex-direction:column;gap:13px}
+.rule-col li{
+  font-size:.895rem;color:var(--muted);line-height:1.6;
+  padding-left:26px;position:relative;
+}
+.rule-col li::before{
+  position:absolute;left:0;top:0;font-weight:700;font-size:.85rem;
+}
+.rule-col.good li::before{content:'✓';color:var(--green)}
+.rule-col.bad li::before{content:'✕';color:var(--red)}
+.rule-col li strong{color:var(--text);font-weight:600}
+
+/* ============================================================
+   PAIR SUITABILITY
+   ============================================================ */
+.suit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.suit-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.suit-grid{grid-template-columns:1fr}}
+.suit{
+  border:1px solid var(--stroke);border-radius:var(--r);
+  padding:22px;background:var(--panel);transition:.3s var(--ease);
+  border-left-width:3px;
+}
+.suit:hover{transform:translateX(4px);background:var(--panel-2)}
+.suit.core{border-left-color:var(--green)}
+.suit.works{border-left-color:var(--amber)}
+.suit.avoid{border-left-color:var(--red)}
+.suit-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.suit h4{font-size:.96rem;font-weight:750;font-family:'JetBrains Mono',monospace;letter-spacing:-.01em}
+.suit-rank{font-size:.62rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;padding:3px 9px;border-radius:5px}
+.core .suit-rank{background:var(--green-dim);color:var(--green)}
+.works .suit-rank{background:rgba(255,180,84,.13);color:var(--amber)}
+.avoid .suit-rank{background:var(--red-dim);color:var(--red)}
+.suit dl{display:flex;flex-direction:column;gap:8px}
+.suit-row{display:flex;justify-content:space-between;gap:14px;font-size:.79rem}
+.suit-row dt{color:var(--muted-2);flex-shrink:0}
+.suit-row dd{color:var(--muted);text-align:right;font-weight:500}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{
+  border-top:1px solid var(--stroke);padding:48px 0 60px;
+  position:relative;z-index:1;background:rgba(7,9,13,.5);
+}
+.foot-in{
+  max-width:var(--maxw);margin:0 auto;padding:0 24px;
+  display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
+}
+.foot-in p{font-size:.8rem;color:var(--muted-2);line-height:1.6}
+.foot-in p strong{color:var(--muted);font-weight:600}
+.disclaimer{
+  max-width:var(--maxw);margin:26px auto 0;padding:18px 24px;
+  font-size:.755rem;color:var(--muted-2);line-height:1.7;
+  border-top:1px solid rgba(255,255,255,.045);
+}
+
+/* ============================================================
+   REVEAL ANIMATION
+   ============================================================ */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ================= NAV ================= -->
+<nav>
+  <div class="nav-in">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      Arbab Hassan's <span>Model</span>
+    </div>
+    <div class="nav-links">
+      <a href="#blocks">Building Blocks</a>
+      <a href="#phases">Execution Flow</a>
+      <a href="#checklist">Checklist</a>
+      <a href="#anatomy">A+ Anatomy</a>
+      <a href="#rules">Rules</a>
+      <a href="#markets">Markets</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> Discretionary Liquidity Model</div>
+    <h1>
+      The <span class="grad">Arbab Hassan</span> Model
+      <span class="ghost">HTF Narrative → Sweep → CISD → Target</span>
+    </h1>
+    <p class="lede">
+      A top-down smart-money framework built on one idea: <strong style="color:var(--text);font-weight:600">wait for a high-timeframe story, let price run liquidity, then enter on a lower-timeframe change in delivery.</strong>
+      No indicators. No guessing direction. Just confluence, confirmation and risk.
+    </p>
+    <div class="hero-cta">
+      <a href="#phases" class="btn btn-primary">See the Execution Flow →</a>
+      <a href="#checklist" class="btn btn-ghost">Run the Checklist</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= BUILDING BLOCKS ================= -->
+<section id="blocks">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Vocabulary</div>
+      <h2>The six building blocks</h2>
+      <p>Every trade in the journal is assembled from the same components. Learn to see these on a chart and the rest is sequencing.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card reveal">
+        <div class="card-ico">🎯</div>
+        <h3>Draw on Liquidity (DOL)</h3>
+        <p>Where price is most likely heading — a previous week high/low, an old swing, an HTF objective. This is your target, and it defines your bias.</p>
+        <span class="tagline">PWH · PWL · old highs/lows</span>
+      </div>
+      <div class="card reveal">
+        <div class="card-ico">📦</div>
+        <h3>Order Block</h3>
+        <p>The last opposing candle before a displacement move. Price often returns to this zone to rebalance before continuing.</p>
+        <span class="tagline">H4 / H1 POI</span>
+      </div>
+      <div class="card reveal">
+        <div class="card-ico">⚡</div>
+        <h3>Fair Value Gap (FVG)</h3>
+        <p>A three-candle imbalance where price moved so fast it left an unfilled gap. Acts as a magnet and a refined entry zone.</p>
+        <span class="tagline">Imbalance / inefficiency</span>
+      </div>
+      <div class="card reveal">
+        <div class="card-ico">💧</div>
+        <h3>Liquidity Sweep</h3>
+        <p>Price spikes through an obvious high or low to trigger stops, then reverses. This is the fuel for the real move.</p>
+        <span class="tagline">Stop run</span>
+      </div>
+      <div class="card reveal">
+        <div class="card-ico">🔄</div>
+        <h3>CISD</h3>
+        <p>Change in State of Delivery — the lower-timeframe confirmation. A displacement candle that breaks the prior delivery direction.</p>
+        <span class="tagline">5m / 15m trigger</span>
+      </div>
+      <div class="card reveal">
+        <div class="card-ico">🧩</div>
+        <h3>Narrative Overlap</h3>
+        <p>When H4 and H1 tell the same story. This is the single biggest conviction booster in the entire model.</p>
+        <span class="tagline">H4 + H1 confluence</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PHASES ================= -->
+<section id="phases">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Execution Flow</div>
+      <h2>Seven phases, top-down</h2>
+      <p>Work through these in order. Never skip a phase to get to the entry — the entry is the last thing that happens, not the first.</p>
+    </div>
+
+    <div class="timeline">
+
+      <div class="phase reveal">
+        <div class="phase-num">01</div>
+        <div class="phase-body">
+          <h3>Bias &amp; Draw on Liquidity</h3>
+          <div class="phase-sub">Weekly · Daily · DXY</div>
+          <p>Start with the biggest picture. Where is price being drawn to, and what is the dollar doing?</p>
+          <ul>
+            <li><strong>Check DXY first.</strong> Inverse for EURUSD, GBPUSD, XAUUSD. Positive for USDCAD.</li>
+            <li><strong>Locate the DOL.</strong> Previous week high/low, old swing, HTF objective.</li>
+            <li><strong>Decide trend or counter-trend.</strong> Trend is the default. Counter-trend needs exceptional confluence.</li>
+            <li><strong>Write one sentence.</strong> "DXY bullish → USDCAD long toward PWH." If you can't write it, you have no bias.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase reveal">
+        <div class="phase-num">02</div>
+        <div class="phase-body">
+          <h3>Mark the H4 &amp; H1 Narratives</h3>
+          <div class="phase-sub">Points of Interest</div>
+          <p>Map the zones where you would actually want to do business. This is preparation, not reaction.</p>
+          <ul>
+            <li><strong>H4 POI:</strong> Order Block, FVG, Swing High/Low, Rejection or Propulsion Block.</li>
+            <li><strong>H1 POI:</strong> the refined version of the same idea.</li>
+            <li><strong>Check overlap.</strong> H4 + H1 agreeing is the A+ condition. H1 alone is a downgrade.</li>
+            <li><strong>Identify the CRT / range.</strong> Mark range high and low — you want one side swept.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase reveal">
+        <div class="phase-num">03</div>
+        <div class="phase-body">
+          <h3>Wait for Price to Reach the POI</h3>
+          <div class="phase-sub">Patience — the hardest phase</div>
+          <p>Most bad trades are born here. Price sits mid-range and the trader invents an entry.</p>
+          <ul>
+            <li><strong>Do not chase.</strong> If price is in the middle of the range, you are not trading.</li>
+            <li><strong>Set alerts</strong> at your POIs and walk away.</li>
+            <li><strong>Engage only</strong> when price enters your H4/H1 zone.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase reveal">
+        <div class="phase-num">04</div>
+        <div class="phase-body">
+          <h3>Sweep + CISD Trigger</h3>
+          <div class="phase-sub">15m / 5m</div>
+          <p>This is the confirmation engine. No sweep, no trade. No CISD, no trade.</p>
+          <ul>
+            <li><strong>Short:</strong> price sweeps a high, then 15m bearish displacement closes below the last up-candle's low.</li>
+            <li><strong>Long:</strong> price sweeps a low, then 15m bullish displacement closes above the last down-candle's high.</li>
+            <li><strong>Refine:</strong> drop to 5m and enter at the OB or FVG created by that displacement.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase reveal">
+        <div class="phase-num">05</div>
+        <div class="phase-body">
+          <h3>Entry, Stop, Target</h3>
+          <div class="phase-sub">Risk defined before you click</div>
+          <p>Execution is mechanical once the trigger fires. No negotiating with the chart.</p>
+          <ul>
+            <li><strong>Entry:</strong> CISD close, or a limit at the 5m/15m OB or FVG.</li>
+            <li><strong>Stop:</strong> beyond the sweep extreme — the invalidation point, not a round number.</li>
+            <li><strong>Target:</strong> the next HTF draw on liquidity. Minimum 2R, prefer 3R+.</li>
+            <li><strong>Risk:</strong> 0.5–1% per trade. A loss should always be -1R.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase reveal">
+        <div class="phase-num">06</div>
+        <div class="phase-body">
+          <h3>Management</h3>
+          <div class="phase-sub">Correlation-aware</div>
+          <p>The journal repeatedly closes early because the dollar finished its own move. That is the model working correctly.</p>
+          <ul>
+            <li><strong>If DXY hits its draw</strong>, close or aggressively protect the position.</li>
+            <li><strong>Move to break-even</strong> only after structure confirms — never on a whim.</li>
+            <li><strong>Exit early</strong> if price action degrades, even at a small profit.</li>
+            <li><strong>Never widen the stop.</strong> Ever.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase reveal">
+        <div class="phase-num">07</div>
+        <div class="phase-body">
+          <h3>Journal Every Trade</h3>
+          <div class="phase-sub">Bias · Narrative · Execution</div>
+          <p>The journal is not paperwork — it is the feedback loop that turns screen time into skill.</p>
+          <ul>
+            <li><strong>Screenshot three charts:</strong> bias, narrative, execution.</li>
+            <li><strong>Record:</strong> result, RR, emotions, remarks, mistakes.</li>
+            <li><strong>Review weekly.</strong> What was A+? What was FOMO? What did you skip that you should have taken?</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHECKLIST ================= -->
+<section id="checklist">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Pre-Trade Gate</div>
+      <h2>The 10-point checklist</h2>
+      <p>Click each condition as it becomes true. The panel scores your setup live. <strong style="color:var(--text);font-weight:600">If you answer "no" to more than two, skip the trade.</strong></p>
+    </div>
+
+    <div class="check-shell reveal">
+      <div class="check-list" id="checkList">
+        <!-- items injected by JS -->
+      </div>
+
+      <div class="score-panel">
+        <div class="score-ring">
+          <svg viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"
+                    stroke-dasharray="326.7" stroke-dashoffset="326.7"></circle>
+          </svg>
+          <div class="score-val"><span id="scoreNum">0</span><small>/10</small></div>
+        </div>
+        <div class="verdict" id="verdict">No Setup</div>
+        <div class="verdict-sub" id="verdictSub">Tick the conditions that are true on your chart right now.</div>
+        <button class="reset-btn" id="resetBtn">Reset Checklist</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANATOMY ================= -->
+<section id="anatomy">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Case Study</div>
+      <h2>Anatomy of an A+ trade</h2>
+      <p>EURUSD · August 24 · Short · +2.5R. A textbook run of the model from narrative to target.</p>
+    </div>
+
+    <div class="anatomy reveal">
+      <div class="anatomy-head">
+        <h3>EURUSD — H4 + H1 Bearish Overlap</h3>
+        <span class="badge-win">+2.50R · WIN</span>
+      </div>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-num">01</div>
+          <div>
+            <h4>Narrative</h4>
+            <p>H4 Order Block + H1 Swing High. Both timeframes bearish.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">02</div>
+          <div>
+            <h4>Overlap</h4>
+            <p>H4 + H1 confirmed. Highest conviction tier.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">03</div>
+          <div>
+            <h4>Sweep</h4>
+            <p>15m stop run above the old 15m order block.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">04</div>
+          <div>
+            <h4>Trigger</h4>
+            <p>5m OB formed inside the co-existing 15m OB. 15m CISD confirmed.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">05</div>
+          <div>
+            <h4>Result</h4>
+            <p>Short entered, target hit at +2.5R.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:34px;padding-top:26px;border-top:1px solid rgba(227,179,65,.16)">
+        <p style="font-size:.9rem;color:var(--muted);font-style:italic;line-height:1.75">
+          "Getting another entry inside old 15m OB through a 15m stop run, then 5m OB inside the co-existing 15m OB — so trade idea still valid for me. Overall high conviction, however the stop placement is a little scary."
+        </p>
+        <p style="font-size:.78rem;color:var(--muted-2);margin-top:12px">
+          Note: even on a winner, the trader flagged discomfort with the stop. That is exactly the kind of self-observation the journal is designed to surface.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RULES ================= -->
+<section id="rules">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Discipline</div>
+      <h2>What the journal teaches</h2>
+      <p>Every loss in the log came from a process break, not a bad model. These are the lines that separate the wins from the losses.</p>
+    </div>
+
+    <div class="rules">
+      <div class="rule-col good reveal">
+        <h3>✓ &nbsp;Do This</h3>
+        <ul>
+          <li><strong>Wait for H4 + H1 overlap</strong> before committing size.</li>
+          <li><strong>Require a sweep</strong> at the POI before looking for CISD.</li>
+          <li><strong>Take the A+ setup</strong> you spent all day waiting for — calmly.</li>
+          <li><strong>Close when DXY hits its draw.</strong> Correlation is a timing tool.</li>
+          <li><strong>Journal the emotion,</strong> not just the entry and exit.</li>
+          <li><strong>Skip the trade</strong> when the stop placement genuinely scares you.</li>
+        </ul>
+      </div>
+      <div class="rule-col bad reveal">
+        <h3>✕ &nbsp;Never This</h3>
+        <ul>
+          <li><strong>FOMO after a missed entry.</strong> The Aug 21 XAUUSD loss was exactly this.</li>
+          <li><strong>Chase a complete reversal</strong> from the top or bottom — very low probability.</li>
+          <li><strong>Trade without an H4 narrative</strong> at full size.</li>
+          <li><strong>Force the Monday open</strong> or thin Asia sessions unless it is genuinely A+.</li>
+          <li><strong>Go counter-trend</strong> without correlated-market confirmation.</li>
+          <li><strong>Widen a stop</strong> or move it before structure confirms.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MARKETS ================= -->
+<section id="markets">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Market Selection</div>
+      <h2>Where the model actually works</h2>
+      <p>The framework is universal in theory, but profitability depends on liquidity, volatility, correlation clarity and cost. Filter your market list ruthlessly.</p>
+    </div>
+
+    <div class="suit-grid">
+      <div class="suit core reveal">
+        <div class="suit-top"><h4>EURUSD</h4><span class="suit-rank">Core</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>London / NY</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Tightest spreads, cleanest structure</dd></div>
+        </dl>
+      </div>
+      <div class="suit core reveal">
+        <div class="suit-top"><h4>GBPUSD</h4><span class="suit-rank">Core</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>London / NY</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>More range, larger stops needed</dd></div>
+        </dl>
+      </div>
+      <div class="suit core reveal">
+        <div class="suit-top"><h4>XAUUSD</h4><span class="suit-rank">Core</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse + yields</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>London / NY</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Highest RR in the log, also highest volatility</dd></div>
+        </dl>
+      </div>
+      <div class="suit core reveal">
+        <div class="suit-top"><h4>USDCAD</h4><span class="suit-rank">Core</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Positive</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>New York</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Oil correlation adds a second filter</dd></div>
+        </dl>
+      </div>
+      <div class="suit core reveal">
+        <div class="suit-top"><h4>NQ / ES</h4><span class="suit-rank">Core</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse / risk-driven</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>NY Open</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Respects HTF levels cleanly</dd></div>
+        </dl>
+      </div>
+      <div class="suit works reveal">
+        <div class="suit-top"><h4>USDJPY</h4><span class="suit-rank">Works</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse + yields</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>London / NY</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Watch for BoJ intervention risk</dd></div>
+        </dl>
+      </div>
+      <div class="suit works reveal">
+        <div class="suit-top"><h4>AUD / NZD USD</h4><span class="suit-rank">Works</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse + risk</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>Asia / London</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>China data adds noise</dd></div>
+        </dl>
+      </div>
+      <div class="suit works reveal">
+        <div class="suit-top"><h4>BTC / ETH</h4><span class="suit-rank">Adapt</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Inverse + risk</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>London / NY</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>24h market — needs session discipline</dd></div>
+        </dl>
+      </div>
+      <div class="suit avoid reveal">
+        <div class="suit-top"><h4>EURGBP / EURCHF</h4><span class="suit-rank">Avoid</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>None direct</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>London</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Low volatility, choppy, no correlation filter</dd></div>
+        </dl>
+      </div>
+      <div class="suit avoid reveal">
+        <div class="suit-top"><h4>Exotics</h4><span class="suit-rank">Avoid</span></div>
+        <dl>
+          <div class="suit-row"><dt>DXY Link</dt><dd>Unreliable</dd></div>
+          <div class="suit-row"><dt>Best Session</dt><dd>—</dd></div>
+          <div class="suit-row"><dt>Notes</dt><dd>Wide spreads, political gaps, news-driven</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="foot-in">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      Arbab Hassan's <span>Model</span>
+    </div>
+    <p><strong>Bias → Narrative → Sweep → CISD → Target.</strong><br>The edge is patience, not prediction.</p>
+  </div>
+  <div class="disclaimer">
+    This page is an educational reconstruction of a personal trading journal. It is not financial advice and not a signal service.
+    Trading involves substantial risk of loss. Past performance does not indicate future results.
+    Backtest and forward-test any framework on demo before risking capital.
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+const progress = document.getElementById('progress');
+function updateProgress(){
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+}
+window.addEventListener('scroll', updateProgress, {passive:true});
+updateProgress();
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('in'), Math.min(i*60, 240));
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:.12, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============================================================
+   CHECKLIST
+   ============================================================ */
+const CHECK_ITEMS = [
+  { t:'DXY is aligned with my direction',        h:'Inverse for EU/GU/XAU · Positive for UC' },
+  { t:'HTF draw on liquidity is clear',          h:'I know exactly where price wants to go' },
+  { t:'H4 + H1 narrative overlap exists',        h:'Both timeframes tell the same story' },
+  { t:'Price is at my HTF point of interest',    h:'Order Block · FVG · Swing High/Low' },
+  { t:'A liquidity sweep has occurred',          h:'Stops were run at the POI' },
+  { t:'15m / 5m CISD has confirmed',             h:'Change in state of delivery printed' },
+  { t:'Reward-to-risk is at least 2R',           h:'Prefer 3R+ toward the next draw' },
+  { t:'Stop placement is logical, not scary',    h:'Beyond the sweep extreme / invalidation' },
+  { t:'I am calm and this was planned',          h:'No urgency, no chasing, no revenge' },
+  { t:'I am NOT chasing a missed entry',        h:'If I missed it, I let it go' }
+];
+
+const listEl  = document.getElementById('checkList');
+const ringFg  = document.getElementById('ringFg');
+const scoreNum= document.getElementById('scoreNum');
+const verdict = document.getElementById('verdict');
+const verdictSub = document.getElementById('verdictSub');
+const resetBtn = document.getElementById('resetBtn');
+const CIRC = 2 * Math.PI * 52; // 326.7
+
+const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="#04140d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+CHECK_ITEMS.forEach((item, i)=>{
+  const el = document.createElement('div');
+  el.className = 'check-item';
+  el.dataset.index = i;
+  el.innerHTML = `
+    <div class="box">${checkSvg}</div>
+    <div>
+      <div class="check-text">${item.t}</div>
+      <div class="check-hint">${item.h}</div>
+    </div>`;
+  el.addEventListener('click', ()=>{
+    el.classList.toggle('on');
+    updateScore();
+  });
+  listEl.appendChild(el);
+});
+
+function updateScore(){
+  const total = CHECK_ITEMS.length;
+  const yes = listEl.querySelectorAll('.check-item.on').length;
+  const pct = yes / total;
+
+  scoreNum.textContent = yes;
+
+  // ring
+  ringFg.style.strokeDashoffset = CIRC * (1 - pct);
+
+  // color + verdict
+  let color, title, sub;
+  if(yes >= 9){
+    color = '#3ddc97';
+    title = 'A+ Setup — Take It';
+    sub = 'Full confluence. Execute the plan, manage by structure, do not get creative.';
+  } else if(yes === 8){
+    color = '#7ee6b8';
+    title = 'Valid — Take It';
+    sub = 'Strong setup. Standard risk. The missing pieces are minor, not structural.';
+  } else if(yes === 7){
+    color = '#ffb454';
+    title = 'Borderline — Reduce or Skip';
+    sub = 'Three conditions missing. Halve your risk, or wait for a cleaner version.';
+  } else if(yes >= 4){
+    color = '#ff8a5c';
+    title = 'Weak — Stand Down';
+    sub = 'Too many gaps. This is a chart to watch, not a trade to take.';
+  } else {
+    color = '#ff5f6d';
+    title = 'No Setup';
+    sub = 'Nothing here. Close the platform and wait for the model to appear.';
+  }
+
+  ringFg.style.stroke = color;
+  ringFg.style.filter = `drop-shadow(0 0 8px ${color}88)`;
+  verdict.style.color = color;
+  verdict.textContent = title;
+  verdictSub.textContent = sub;
+}
+
+resetBtn.addEventListener('click', ()=>{
+  listEl.querySelectorAll('.check-item.on').forEach(el=>el.classList.remove('on'));
+  updateScore();
+});
+
+updateScore();
+</script>
+</body>
+</html>
