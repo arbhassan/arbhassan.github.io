@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Simple Supply Demand Strategy — 4H/1H Bias · 15m POI · 5m Entry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --bg:#070b14;
+    --line:rgba(255,255,255,.08);
+    --line2:rgba(255,255,255,.14);
+    --txt:#e8eefb;
+    --mut:#8a9ab5;
+    --green:#00e5a0;
+    --red:#ff4d6d;
+    --amber:#ffb547;
+    --blue:#5aa9ff;
+    --violet:#a78bfa;
+    --card:rgba(255,255,255,.035);
+    --card2:rgba(255,255,255,.055);
+  }
+
+  html{scroll-behavior:smooth}
+
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:'';
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(900px 520px at 12% -6%, rgba(0,229,160,.11), transparent 62%),
+      radial-gradient(900px 520px at 88% -2%, rgba(255,77,109,.10), transparent 62%),
+      radial-gradient(1200px 800px at 50% 108%, rgba(90,169,255,.08), transparent 62%);
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky;top:0;z-index:60;
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    background:rgba(7,11,20,.72);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-in{
+    max-width:1180px;margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+  }
+  .logo{
+    font-weight:800;letter-spacing:-.02em;font-size:14.5px;
+    display:flex;align-items:center;gap:10px;white-space:nowrap;
+  }
+  .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green);flex:none}
+  .logo em{font-style:normal;color:var(--mut);font-weight:600}
+  .nav-links{display:flex;gap:22px;font-size:13px;color:var(--mut);font-weight:500}
+  .nav-links a{color:inherit;text-decoration:none;transition:color .2s}
+  .nav-links a:hover{color:var(--txt)}
+  @media(max-width:960px){.nav-links{display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;z-index:1;
+    max-width:1180px;margin:0 auto;
+    padding:90px 24px 60px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--green);font-weight:700;
+    border:1px solid rgba(0,229,160,.28);
+    background:rgba(0,229,160,.06);
+    padding:7px 15px;border-radius:100px;
+  }
+  .eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+  h1{
+    font-size:clamp(2.2rem,5.6vw,4.1rem);
+    line-height:1.05;letter-spacing:-.038em;font-weight:900;
+    margin:28px 0 22px;max-width:18ch;
+  }
+  h1 .grad{
+    background:linear-gradient(100deg,var(--green),var(--blue) 52%,var(--violet));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{font-size:clamp(1rem,1.6vw,1.14rem);color:var(--mut);max-width:680px}
+
+  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
+  .pill{
+    font-size:12.5px;font-weight:600;letter-spacing:.02em;
+    padding:8px 15px;border-radius:100px;
+    border:1px solid var(--line2);
+    background:rgba(255,255,255,.04);
+    color:var(--txt);display:flex;align-items:center;gap:8px;
+  }
+  .pill b{font-weight:700}
+  .pill.g{border-color:rgba(0,229,160,.3);color:#8ff5d3}
+  .pill.r{border-color:rgba(255,77,109,.3);color:#ffa4b5}
+  .pill.a{border-color:rgba(255,181,71,.3);color:#ffd79a}
+  .pill.b{border-color:rgba(90,169,255,.3);color:#a8d1ff}
+  .pill.v{border-color:rgba(167,139,250,.3);color:#c9b8ff}
+
+  /* ---------- SECTIONS ---------- */
+  section{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:70px 24px}
+  .sec-num{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    color:var(--green);letter-spacing:.2em;text-transform:uppercase;
+    margin-bottom:16px;display:flex;align-items:center;gap:14px;font-weight:600;
+  }
+  .sec-num::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,229,160,.35),transparent)}
+  h2{
+    font-size:clamp(1.65rem,3.5vw,2.45rem);
+    letter-spacing:-.032em;font-weight:800;line-height:1.14;
+    margin-bottom:16px;max-width:24ch;
+  }
+  h3{font-size:1.08rem;font-weight:700;letter-spacing:-.012em;margin-bottom:8px}
+  p{color:var(--mut)}
+  .sec-intro{font-size:1.03rem;max-width:740px;margin-bottom:38px}
+
+  /* ---------- FLOW ---------- */
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px}
+  .flow-step{
+    background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+    border:1px solid var(--line);border-radius:18px;padding:22px 20px;
+    position:relative;overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.7,.3,1),border-color .35s;
+  }
+  .flow-step:hover{transform:translateY(-4px);border-color:var(--line2)}
+  .flow-step::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--green),transparent);
+    opacity:.7;
+  }
+  .flow-step .n{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--green);letter-spacing:.14em;font-weight:600;
+  }
+  .flow-step h3{margin:10px 0 6px;font-size:1rem}
+  .flow-step p{font-size:.88rem;line-height:1.6}
+
+  /* ---------- DEFINITION CARDS ---------- */
+  .defs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+  @media(max-width:900px){.defs{grid-template-columns:1fr}}
+  .def{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:24px;
+  }
+  .def .tag{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+    display:inline-block;padding:4px 10px;border-radius:6px;margin-bottom:14px;
+  }
+  .tag.supply{background:rgba(255,77,109,.12);color:#ff8fa3;border:1px solid rgba(255,77,109,.25)}
+  .tag.demand{background:rgba(0,229,160,.12);color:#5ff0c0;border:1px solid rgba(0,229,160,.25)}
+  .tag.poi{background:rgba(90,169,255,.12);color:#9ccbff;border:1px solid rgba(90,169,255,.25)}
+  .def p{font-size:.92rem}
+
+  /* ---------- HTF BIAS ---------- */
+  .htf-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:880px){.htf-grid{grid-template-columns:1fr}}
+  .htf-card{
+    border-radius:22px;padding:24px;border:1px solid var(--line);
+    background:var(--card);position:relative;overflow:hidden;
+  }
+  .htf-card.bull{border-color:rgba(0,229,160,.22)}
+  .htf-card.bear{border-color:rgba(255,77,109,.22)}
+  .htf-card.bull::before{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(420px 240px at 100% 0%,rgba(0,229,160,.10),transparent 70%);
+  }
+  .htf-card.bear::before{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(420px 240px at 100% 0%,rgba(255,77,109,.10),transparent 70%);
+  }
+  .htf-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;position:relative;flex-wrap:wrap}
+  .htf-head h3{margin:0;font-size:1.05rem}
+  .badge{
+    font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 11px;border-radius:7px;flex:none;
+  }
+  .badge.b{background:rgba(0,229,160,.14);color:#5ff0c0;border:1px solid rgba(0,229,160,.28)}
+  .badge.s{background:rgba(255,77,109,.14);color:#ff8fa3;border:1px solid rgba(255,77,109,.28)}
+  .htf-card svg{
+    width:100%;height:auto;display:block;border-radius:14px;
+    background:rgba(0,0,0,.22);margin-bottom:18px;position:relative;
+    border:1px solid rgba(255,255,255,.05);
+  }
+  .struct{list-style:none;display:grid;gap:10px;position:relative}
+  .struct li{font-size:.88rem;color:var(--mut);padding-left:20px;position:relative;line-height:1.58}
+  .struct li::before{
+    content:'';position:absolute;left:2px;top:9px;
+    width:6px;height:6px;border-radius:50%;background:var(--green);
+  }
+  .htf-card.bear .struct li::before{background:var(--red)}
+  .struct b{color:var(--txt);font-weight:600}
+  .plan{
+    margin-top:18px;padding:13px 16px;border-radius:13px;
+    font-size:.87rem;font-weight:600;position:relative;
+    background:rgba(0,229,160,.09);border:1px solid rgba(0,229,160,.22);color:#8ff5d3;
+  }
+  .htf-card.bear .plan{
+    background:rgba(255,77,109,.09);border-color:rgba(255,77,109,.22);color:#ffa4b5;
+  }
+
+  .tf-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+  @media(max-width:800px){.tf-strip{grid-template-columns:1fr}}
+  .tf-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .tf-box .tf-tag{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;
+    color:var(--green);font-weight:600;margin-bottom:9px;display:block;
+  }
+  .tf-box h3{font-size:.98rem;margin-bottom:7px}
+  .tf-box p{font-size:.86rem;line-height:1.6}
+
+  /* ---------- CHART CARD ---------- */
+  .chart-card{
+    background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+    border:1px solid var(--line);border-radius:22px;
+    padding:18px 14px 8px;margin-top:30px;
+    box-shadow:0 30px 70px -40px rgba(0,0,0,.9);
+  }
+  .chart-card svg{width:100%;height:auto;display:block}
+  .chart-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:14px;padding:0 8px 12px;flex-wrap:wrap;
+  }
+  .chart-title{font-size:.95rem;font-weight:700;letter-spacing:-.01em}
+  .chart-sub{font-size:.8rem;color:var(--mut)}
+  .legend{
+    display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);
+    padding:10px 8px 6px;border-top:1px solid var(--line);margin-top:6px;
+  }
+  .legend span{display:flex;align-items:center;gap:7px}
+  .swatch{width:11px;height:11px;border-radius:3px;flex:none}
+
+  /* ---------- RULE LIST ---------- */
+  .rules{list-style:none;display:grid;gap:14px;margin-top:8px}
+  .rules li{
+    display:flex;gap:14px;align-items:flex-start;
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:16px 18px;font-size:.92rem;color:var(--mut);
+    transition:border-color .3s,background .3s;
+  }
+  .rules li:hover{border-color:var(--line2);background:var(--card2)}
+  .rules .k{
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--green);background:rgba(0,229,160,.1);
+    border:1px solid rgba(0,229,160,.22);
+    min-width:26px;height:26px;padding:0 6px;border-radius:8px;
+    display:grid;place-items:center;flex:none;margin-top:1px;
+  }
+  .rules b{color:var(--txt);font-weight:600}
+
+  /* ---------- TRIGGER CARDS ---------- */
+  .triggers{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media(max-width:820px){.triggers{grid-template-columns:1fr}}
+  .trig{
+    background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+    border:1px solid var(--line);border-radius:20px;
+    padding:22px;transition:transform .35s cubic-bezier(.2,.7,.3,1),border-color .35s;
+  }
+  .trig:hover{transform:translateY(-4px);border-color:var(--line2)}
+  .trig svg{width:100%;height:auto;display:block;margin-bottom:16px;border-radius:12px;background:rgba(0,0,0,.22)}
+  .trig .num{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    color:var(--mut);font-weight:600;margin-bottom:8px;display:block;
+  }
+  .trig h3{margin-bottom:8px;font-size:1.02rem}
+  .trig p{font-size:.89rem;line-height:1.62}
+  .trig .note{
+    margin-top:14px;padding-top:12px;border-top:1px dashed var(--line2);
+    font-size:.82rem;color:var(--mut);
+  }
+  .trig .note b{color:var(--amber);font-weight:600}
+
+  /* ---------- TRADE MODEL ---------- */
+  .models{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+  @media(max-width:820px){.models{grid-template-columns:1fr}}
+  .model{
+    border-radius:22px;padding:26px;border:1px solid var(--line);
+    background:var(--card);position:relative;overflow:hidden;
+  }
+  .model.buy{border-color:rgba(0,229,160,.22)}
+  .model.sell{border-color:rgba(255,77,109,.22)}
+  .model::before{content:'';position:absolute;inset:0;pointer-events:none}
+  .model.buy::before{background:radial-gradient(400px 200px at 100% 0%,rgba(0,229,160,.10),transparent 70%)}
+  .model.sell::before{background:radial-gradient(400px 200px at 100% 0%,rgba(255,77,109,.10),transparent 70%)}
+  .model h3{font-size:1.15rem;display:flex;align-items:center;gap:10px;margin-bottom:18px;position:relative}
+  .mrow{
+    display:grid;grid-template-columns:100px 1fr;gap:14px;
+    padding:11px 0;border-bottom:1px solid var(--line);
+    font-size:.89rem;position:relative;
+  }
+  .mrow:last-child{border-bottom:none}
+  .mrow .lbl{
+    color:var(--mut);font-weight:600;font-size:.78rem;
+    letter-spacing:.04em;text-transform:uppercase;padding-top:3px;
+  }
+  .mrow .val{color:var(--txt)}
+
+  /* ---------- CHECKLIST ---------- */
+  .check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:32px}
+  @media(max-width:760px){.check-grid{grid-template-columns:1fr}}
+  .check{
+    display:flex;align-items:flex-start;gap:14px;
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:16px 18px;cursor:pointer;
+    transition:border-color .25s,background .25s;
+  }
+  .check:hover{border-color:var(--line2);background:var(--card2)}
+  .check input{
+    appearance:none;-webkit-appearance:none;
+    width:19px;height:19px;flex:none;margin-top:3px;
+    border:1.5px solid var(--line2);border-radius:6px;
+    background:rgba(255,255,255,.03);
+    cursor:pointer;position:relative;transition:.25s;
+  }
+  .check input:checked{background:var(--green);border-color:var(--green);box-shadow:0 0 16px rgba(0,229,160,.4)}
+  .check input:checked::after{
+    content:'';position:absolute;left:5.5px;top:2px;
+    width:4px;height:9px;border:solid #04140e;
+    border-width:0 2px 2px 0;transform:rotate(45deg);
+  }
+  .check span{font-size:.9rem;color:var(--mut);line-height:1.6}
+  .check input:checked + span{color:var(--txt)}
+  .check b{color:var(--txt);font-weight:600}
+
+  /* ---------- CALLOUT ---------- */
+  .callout{
+    border-radius:20px;padding:26px 28px;margin-top:32px;
+    border:1px solid rgba(255,181,71,.25);
+    background:linear-gradient(140deg,rgba(255,181,71,.09),rgba(255,181,71,.02));
+  }
+  .callout h3{color:var(--amber);display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .callout p{color:#d8c49a;font-size:.92rem}
+
+  /* ---------- CHEAT SHEET ---------- */
+  .cheat{
+    border-radius:22px;overflow:hidden;
+    border:1px solid var(--line);
+    background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));
+    margin-top:34px;
+  }
+  .cheat-row{
+    display:grid;grid-template-columns:190px 1fr;
+    border-bottom:1px solid var(--line);
+  }
+  .cheat-row:last-child{border-bottom:none}
+  .cheat-row .c1{
+    padding:18px 22px;font-weight:700;font-size:.82rem;
+    letter-spacing:.04em;text-transform:uppercase;
+    background:rgba(255,255,255,.028);color:var(--green);
+    border-right:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .cheat-row .c2{padding:18px 22px;font-size:.91rem;color:var(--mut)}
+  .cheat-row .c2 b{color:var(--txt);font-weight:600}
+  @media(max-width:680px){
+    .cheat-row{grid-template-columns:1fr}
+    .cheat-row .c1{border-right:none;border-bottom:1px solid var(--line);padding-bottom:10px}
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    position:relative;z-index:1;
+    max-width:1180px;margin:0 auto;
+    padding:56px 24px 80px;
+    border-top:1px solid var(--line);
+    margin-top:40px;
+  }
+  footer p{font-size:.83rem;color:#5f6f8a;max-width:780px}
+  footer .brand{
+    font-weight:800;font-size:.9rem;color:var(--txt);
+    margin-bottom:12px;display:flex;align-items:center;gap:9px;
+  }
+  footer .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+
+  /* ---------- REVEAL ---------- */
+  .reveal{
+    opacity:0;transform:translateY(26px);
+    transition:opacity .8s cubic-bezier(.2,.7,.3,1),transform .8s cubic-bezier(.2,.7,.3,1);
+  }
+  .reveal.in{opacity:1;transform:none}
+
+  ::selection{background:rgba(0,229,160,.28);color:#fff}
+
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-track{background:#070b14}
+  ::-webkit-scrollbar-thumb{background:#1c2740;border-radius:10px;border:2px solid #070b14}
+  ::-webkit-scrollbar-thumb:hover{background:#2a3a5c}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="nav-in">
+    <div class="logo">
+      <span class="dot"></span>
+      My Simple Supply Demand <em>Strategy</em>
+    </div>
+    <div class="nav-links">
+      <a href="#clarify">Concept</a>
+      <a href="#bias">4H / 1H Bias</a>
+      <a href="#mark">15m Zones</a>
+      <a href="#entry">5m Triggers</a>
+      <a href="#model">Trade Model</a>
+      <a href="#checklist">Checklist</a>
+      <a href="#cheat">Cheat Sheet</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="eyebrow reveal">My Simple Supply Demand Strategy</div>
+  <h1 class="reveal">Bias on <span class="grad">4H &amp; 1H</span>.<br>POI on 15m. Entry on 5m.</h1>
+  <p class="lede reveal">
+    A three-layer supply &amp; demand system. The <b>4-hour and 1-hour</b> charts tell you which
+    direction the market is delivering in. The <b>15-minute</b> chart tells you where the point of
+    interest is. The <b>5-minute</b> chart tells you exactly when to pull the trigger — using
+    rejection, engulfing, MSS, or CISD as confirmation.
+  </p>
+
+  <div class="pills reveal">
+    <div class="pill v"><b>4H</b> — Major trend</div>
+    <div class="pill v"><b>1H</b> — Trend confirmation</div>
+    <div class="pill g"><b>15m</b> — Supply &amp; Demand POI</div>
+    <div class="pill b"><b>5m</b> — Trigger &amp; Execution</div>
+    <div class="pill a"><b>MSS</b> · <b>CISD</b> · Engulfing</div>
+    <div class="pill r">Min <b>1 : 2</b> Risk–Reward</div>
+  </div>
+</header>
+
+<!-- ============ CLARIFY ============ -->
+<section id="clarify">
+  <div class="sec-num reveal">01 — The Concept, Clarified</div>
+  <h2 class="reveal">What you're actually trading</h2>
+  <p class="sec-intro reveal">
+    A <b>POI (Point of Interest)</b> is a price area where institutional orders were left unfilled —
+    visible as a sharp, one-sided <b>displacement</b> away from a small base. Price tends to return to
+    that area to rebalance. But before you even look for a zone, you must know the
+    <b>higher-timeframe direction</b>. Trading a demand POI in a bearish 4H market is how accounts die.
+  </p>
+
+  <div class="flow">
+    <div class="flow-step reveal">
+      <div class="n">STEP 01</div>
+      <h3>Read 4H &amp; 1H</h3>
+      <p>Decide the bias: bullish, bearish, or ranging. This is your filter for everything else.</p>
+    </div>
+    <div class="flow-step reveal">
+      <div class="n">STEP 02</div>
+      <h3>Mark the 15m zone</h3>
+      <p>Find a base + strong displacement. Box the origin candle. That box is your POI.</p>
+    </div>
+    <div class="flow-step reveal">
+      <div class="n">STEP 03</div>
+      <h3>Wait for the return</h3>
+      <p>Do nothing until price comes back and taps the zone. Patience is the edge.</p>
+    </div>
+    <div class="flow-step reveal">
+      <div class="n">STEP 04</div>
+      <h3>Get 5m proof</h3>
+      <p>Drop to the <b>5m</b>. Look for rejection, engulfing, MSS or CISD inside the zone.</p>
+    </div>
+    <div class="flow-step reveal">
+      <div class="n">STEP 05</div>
+      <h3>Enter &amp; manage</h3>
+      <p>Enter on the confirmation close. Stop beyond the zone. Target the opposite POI.</p>
+    </div>
+  </div>
+
+  <div class="defs">
+    <div class="def reveal">
+      <div class="tag supply">Supply POI</div>
+      <h3>Where sellers are waiting</h3>
+      <p>A small consolidation (base) followed by a violent <b>down</b> move. The last up-candle before
+      that drop is the <b>origin candle</b>. Its body / wick range becomes your sell zone.</p>
+    </div>
+    <div class="def reveal">
+      <div class="tag demand">Demand POI</div>
+      <h3>Where buyers are waiting</h3>
+      <p>A small consolidation followed by a violent <b>up</b> move. The last down-candle before that
+      rally is the origin candle. Its range becomes your buy zone.</p>
+    </div>
+    <div class="def reveal">
+      <div class="tag poi">Quality filter</div>
+      <h3>Not all zones are equal</h3>
+      <p>A-grade POIs leave <b>imbalance / FVG</b>, cause a <b>break of structure</b>, sit at a
+      <b>higher-timeframe level</b>, and are <b>fresh</b> — never tested before.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HTF BIAS ============ -->
+<section id="bias">
+  <div class="sec-num reveal">02 — Directional Bias</div>
+  <h2 class="reveal">First, know the trend: 4H &amp; 1H</h2>
+  <p class="sec-intro reveal">
+    Before you mark a single zone, open the <b>4-hour</b> chart. Then the <b>1-hour</b>.
+    You are answering one question: <b>is this market bullish or bearish right now?</b>
+    Supply &amp; demand only works with the trend — a beautiful demand POI in a downtrend is a trap.
+  </p>
+
+  <div class="htf-grid">
+
+    <!-- BULLISH -->
+    <div class="htf-card bull reveal">
+      <div class="htf-head">
+        <span class="badge b">Bullish Bias</span>
+        <h3>Higher Highs · Higher Lows</h3>
+      </div>
+      <svg viewBox="0 0 420 175" xmlns="http://www.w3.org/2000/svg">
+        <line x1="12" y1="140" x2="408" y2="140" stroke="rgba(255,255,255,.06)"/>
+        <line x1="12" y1="92"  x2="408" y2="92"  stroke="rgba(255,255,255,.06)"/>
+        <line x1="12" y1="44"  x2="408" y2="44"  stroke="rgba(255,255,255,.06)"/>
+        <line x1="25" y1="132" x2="398" y2="22" stroke="rgba(0,229,160,.35)"
+              stroke-width="1.5" stroke-dasharray="6 5"/>
+        <polyline points="28,128 96,72 146,100 226,42 276,74 366,18"
+                  fill="none" stroke="#00e5a0" stroke-width="2.4"
+                  stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="96"  cy="72"  r="4.5" fill="#00e5a0"/>
+        <circle cx="146" cy="100" r="4.5" fill="#5aa9ff"/>
+        <circle cx="226" cy="42"  r="4.5" fill="#00e5a0"/>
+        <circle cx="276" cy="74"  r="4.5" fill="#5aa9ff"/>
+        <circle cx="366" cy="18"  r="4.5" fill="#00e5a0"/>
+        <text x="146" y="120" text-anchor="middle" fill="#5aa9ff" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">HL</text>
+        <text x="226" y="30"  text-anchor="middle" fill="#00e5a0" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">HH</text>
+        <text x="276" y="94"  text-anchor="middle" fill="#5aa9ff" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">HL</text>
+        <text x="366" y="10"  text-anchor="middle" fill="#00e5a0" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">HH</text>
+        <text x="18" y="160" fill="#8a9ab5" font-size="10.5"
+              font-family="Inter, sans-serif" letter-spacing="1.2">UPTREND STRUCTURE</text>
+      </svg>
+      <ul class="struct">
+        <li>Price is printing <b>higher highs</b> and <b>higher lows</b></li>
+        <li>The last major <b>break of structure</b> was to the upside</li>
+        <li>Demand POIs hold; supply POIs get <b>broken through</b></li>
+        <li>Pullbacks into 15m demand are opportunities, not warnings</li>
+      </ul>
+      <div class="plan">→ Only look for <b>BUYS</b> at 15m demand POIs</div>
+    </div>
+
+    <!-- BEARISH -->
+    <div class="htf-card bear reveal">
+      <div class="htf-head">
+        <span class="badge s">Bearish Bias</span>
+        <h3>Lower Highs · Lower Lows</h3>
+      </div>
+      <svg viewBox="0 0 420 175" xmlns="http://www.w3.org/2000/svg">
+        <line x1="12" y1="140" x2="408" y2="140" stroke="rgba(255,255,255,.06)"/>
+        <line x1="12" y1="92"  x2="408" y2="92"  stroke="rgba(255,255,255,.06)"/>
+        <line x1="12" y1="44"  x2="408" y2="44"  stroke="rgba(255,255,255,.06)"/>
+        <line x1="25" y1="42" x2="398" y2="152" stroke="rgba(255,77,109,.35)"
+              stroke-width="1.5" stroke-dasharray="6 5"/>
+        <polyline points="28,46 96,100 146,72 226,130 276,98 366,156"
+                  fill="none" stroke="#ff4d6d" stroke-width="2.4"
+                  stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="96"  cy="100" r="4.5" fill="#ff4d6d"/>
+        <circle cx="146" cy="72"  r="4.5" fill="#ffb547"/>
+        <circle cx="226" cy="130" r="4.5" fill="#ff4d6d"/>
+        <circle cx="276" cy="98"  r="4.5" fill="#ffb547"/>
+        <circle cx="366" cy="156" r="4.5" fill="#ff4d6d"/>
+        <text x="146" y="62"  text-anchor="middle" fill="#ffb547" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">LH</text>
+        <text x="226" y="150" text-anchor="middle" fill="#ff4d6d" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">LL</text>
+        <text x="276" y="88"  text-anchor="middle" fill="#ffb547" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">LH</text>
+        <text x="366" y="172" text-anchor="middle" fill="#ff4d6d" font-size="11.5"
+              font-weight="700" font-family="Inter, sans-serif">LL</text>
+        <text x="18" y="30" fill="#8a9ab5" font-size="10.5"
+              font-family="Inter, sans-serif" letter-spacing="1.2">DOWNTREND STRUCTURE</text>
+      </svg>
+      <ul class="struct">
+        <li>Price is printing <b>lower highs</b> and <b>lower lows</b></li>
+        <li>The last major <b>break of structure</b> was to the downside</li>
+        <li>Supply POIs hold; demand POIs get <b>broken through</b></li>
+        <li>Rallies into 15m supply are opportunities, not strength</li>
+      </ul>
+      <div class="plan">→ Only look for <b>SELLS</b> at 15m supply POIs</div>
+    </div>
+
+  </div>
+
+  <div class="tf-strip">
+    <div class="tf-box reveal">
+      <span class="tf-tag">4H — THE BOSS</span>
+      <h3>Major direction</h3>
+      <p>The 4H tells you the dominant trend. This is your <b>non-negotiable filter</b>. If the 4H is
+      bearish, you do not take buy setups. Ever.</p>
+    </div>
+    <div class="tf-box reveal">
+      <span class="tf-tag">1H — THE CONFIRMATION</span>
+      <h3>Current leg</h3>
+      <p>The 1H shows you the active swing. Is price retracing or continuing? This tells you
+      <b>which POI price is likely to reach next</b>.</p>
+    </div>
+    <div class="tf-box reveal">
+      <span class="tf-tag">ALIGNMENT RULE</span>
+      <h3>Both agree = trade</h3>
+      <p>When 4H and 1H point the same way, you have an <b>A+ environment</b>. When they conflict,
+      reduce size drastically — or simply <b>stay out</b>.</p>
+    </div>
+  </div>
+
+  <div class="callout reveal">
+    <h3>⚠ The one rule that saves accounts</h3>
+    <p>
+      <b>Trade with the 4H trend, or don't trade.</b> Counter-trend supply and demand setups work
+      sometimes, but the win rate collapses and the drawdowns get ugly. Your edge is not in catching
+      reversals — it's in joining the direction that is already delivering.
+    </p>
+  </div>
+</section>
+
+<!-- ============ MARK ON 15m ============ -->
+<section id="mark">
+  <div class="sec-num reveal">03 — Step Two</div>
+  <h2 class="reveal">Mark the POI on the 15-minute</h2>
+  <p class="sec-intro reveal">
+    Now that you know the direction, zoom in. You're not looking for patterns — you're looking for
+    <b>energy</b>. A zone only exists because price left it with force.
+  </p>
+
+  <ul class="rules">
+    <li class="reveal"><span class="k">1</span><div><b>Find the displacement.</b> Scan for a candle or a run of 2–4 candles that moves hard in one direction with tiny wicks. That's an imbalance being created.</div></li>
+    <li class="reveal"><span class="k">2</span><div><b>Find the base.</b> Look immediately to the left of the displacement — 1 to 3 small, overlapping candles. That's the accumulation / distribution before the move.</div></li>
+    <li class="reveal"><span class="k">3</span><div><b>Box the origin candle.</b> Take the body (open → close) of the last opposing candle before the move. Widen to the wick only if the body is tiny.</div></li>
+    <li class="reveal"><span class="k">4</span><div><b>Draw the zone forward.</b> Extend the rectangle to the right. It stays valid until price mitigates it.</div></li>
+    <li class="reveal"><span class="k">5</span><div><b>Grade it.</b> Does it sit at a 1H / 4H level? Did it cause a BOS? Did it leave an FVG? Yes to more = higher probability.</div></li>
+    <li class="reveal"><span class="k">6</span><div><b>Keep only the best 2–3.</b> A chart with fifteen boxes is a chart with no plan.</div></li>
+  </ul>
+
+  <!-- SUPPLY CHART -->
+  <div class="chart-card reveal">
+    <div class="chart-head">
+      <div>
+        <div class="chart-title">15m Supply POI — formation &amp; return</div>
+        <div class="chart-sub">Base → displacement → return → rejection</div>
+      </div>
+    </div>
+    <div id="chartSupply"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#ff4d6d"></i> Bearish candle</span>
+      <span><i class="swatch" style="background:#00e5a0"></i> Bullish candle</span>
+      <span><i class="swatch" style="background:rgba(255,77,109,.22);border:1px dashed #ff4d6d"></i> Supply POI (15m)</span>
+      <span><i class="swatch" style="background:#5aa9ff"></i> Origin candle</span>
+    </div>
+  </div>
+
+  <!-- DEMAND CHART -->
+  <div class="chart-card reveal">
+    <div class="chart-head">
+      <div>
+        <div class="chart-title">15m Demand POI — formation &amp; return</div>
+        <div class="chart-sub">The exact mirror image — base, rally, return, rejection</div>
+      </div>
+    </div>
+    <div id="chartDemand"></div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#00e5a0"></i> Bullish candle</span>
+      <span><i class="swatch" style="background:#ff4d6d"></i> Bearish candle</span>
+      <span><i class="swatch" style="background:rgba(0,229,160,.22);border:1px dashed #00e5a0"></i> Demand POI (15m)</span>
+      <span><i class="swatch" style="background:#5aa9ff"></i> Origin candle</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5m TRIGGERS ============ -->
+<section id="entry">
+  <div class="sec-num reveal">04 — Step Three</div>
+  <h2 class="reveal">The 5-minute confirmation triggers</h2>
+  <p class="sec-intro reveal">
+    Price has tapped your 15m zone — and the 4H / 1H bias agrees with the direction. Now you drop to
+    the 5-minute and wait.
+    <b>You need at least one of these four to fire.</b> No trigger, no trade — the zone alone is not a signal.
+  </p>
+
+  <div class="triggers">
+
+    <!-- REJECTION -->
+    <div class="trig reveal">
+      <svg viewBox="0 0 240 132" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="88" width="240" height="34" fill="rgba(0,229,160,.10)" stroke="#00e5a0" stroke-width="1" stroke-dasharray="5 4"/>
+        <line x1="118" y1="98" x2="118" y2="26" stroke="#00e5a0" stroke-width="2"/>
+        <rect x="106" y="40" width="24" height="44" fill="#00e5a0" opacity=".95" rx="1.5"/>
+        <text x="12" y="110" fill="#5ff0c0" font-size="10.5" font-family="Inter" font-weight="600" letter-spacing="1">DEMAND POI</text>
+        <text x="150" y="24" fill="#8a9ab5" font-size="10.5" font-family="Inter">long lower wick</text>
+      </svg>
+      <span class="num">TRIGGER 01</span>
+      <h3>Rejection</h3>
+      <p>Price wicks deep into the zone but <b>closes back outside</b> it. The wick is the footprint of
+      aggressive orders absorbing the move. A close beyond the zone = invalid, walk away.</p>
+      <div class="note"><b>Best when:</b> the wick sweeps a prior low/high — that's liquidity being taken, not genuine continuation.</div>
+    </div>
+
+    <!-- ENGULFING -->
+    <div class="trig reveal">
+      <svg viewBox="0 0 240 132" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="88" width="240" height="34" fill="rgba(0,229,160,.10)" stroke="#00e5a0" stroke-width="1" stroke-dasharray="5 4"/>
+        <line x1="80" y1="40" x2="80" y2="80" stroke="#ff4d6d" stroke-width="1.6"/>
+        <rect x="72" y="46" width="16" height="24" fill="#ff4d6d" rx="1.5"/>
+        <line x1="112" y1="26" x2="112" y2="94" stroke="#00e5a0" stroke-width="1.6"/>
+        <rect x="100" y="32" width="24" height="56" fill="#00e5a0" rx="1.5"/>
+        <text x="12" y="110" fill="#5ff0c0" font-size="10.5" font-family="Inter" font-weight="600" letter-spacing="1">DEMAND POI</text>
+        <text x="140" y="60" fill="#8a9ab5" font-size="10.5" font-family="Inter">body engulfs prior</text>
+      </svg>
+      <span class="num">TRIGGER 02</span>
+      <h3>Engulfing candle</h3>
+      <p>A full-bodied candle that <b>completely engulfs</b> the body of the previous candle, closing
+      hard in your direction. It signals a sudden shift in order flow right at the zone.</p>
+      <div class="note"><b>Best when:</b> the engulfing candle closes beyond the zone edge and leaves an FVG behind it.</div>
+    </div>
+
+    <!-- MSS -->
+    <div class="trig reveal">
+      <svg viewBox="0 0 240 132" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="98" width="240" height="28" fill="rgba(0,229,160,.08)" stroke="#00e5a0" stroke-width="1" stroke-dasharray="5 4"/>
+        <polyline points="14,34 44,74 66,56 92,96 126,42 162,22 214,28"
+                  fill="none" stroke="#5aa9ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <line x1="66" y1="56" x2="232" y2="56" stroke="#ffb547" stroke-width="1.2" stroke-dasharray="5 4"/>
+        <circle cx="126" cy="42" r="4" fill="#00e5a0"/>
+        <text x="146" y="50" fill="#ffb547" font-size="10.5" font-family="Inter">MSS level</text>
+        <text x="12" y="118" fill="#5ff0c0" font-size="10.5" font-family="Inter" font-weight="600" letter-spacing="1">DEMAND POI</text>
+      </svg>
+      <span class="num">TRIGGER 03</span>
+      <h3>Market Structure Shift</h3>
+      <p>Inside the zone, price makes a low, then <b>breaks the most recent 5m swing high</b> with a
+      displacement candle. The short-term bearish structure is now broken — buyers are in control.</p>
+      <div class="note"><b>Best when:</b> the break happens with momentum and the entry is on the retest of the broken swing.</div>
+    </div>
+
+    <!-- CISD -->
+    <div class="trig reveal">
+      <svg viewBox="0 0 240 132" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="98" width="240" height="28" fill="rgba(0,229,160,.08)" stroke="#00e5a0" stroke-width="1" stroke-dasharray="5 4"/>
+        <rect x="52" y="38" width="18" height="26" fill="#ff4d6d" rx="1.5"/>
+        <rect x="80" y="54" width="18" height="26" fill="#ff4d6d" rx="1.5"/>
+        <rect x="108" y="70" width="18" height="26" fill="#ff4d6d" rx="1.5"/>
+        <line x1="40" y1="38" x2="234" y2="38" stroke="#ffb547" stroke-width="1.2" stroke-dasharray="5 4"/>
+        <line x1="152" y1="26" x2="152" y2="92" stroke="#00e5a0" stroke-width="1.6"/>
+        <rect x="140" y="30" width="24" height="52" fill="#00e5a0" rx="1.5"/>
+        <text x="162" y="36" fill="#ffb547" font-size="10.5" font-family="Inter">CISD level</text>
+        <text x="12" y="118" fill="#5ff0c0" font-size="10.5" font-family="Inter" font-weight="600" letter-spacing="1">DEMAND POI</text>
+      </svg>
+      <span class="num">TRIGGER 04</span>
+      <h3>CISD — Change in State of Delivery</h3>
+      <p>Mark the <b>open of the first candle</b> in the last consecutive down-close series. When price
+      closes <b>above</b> that level, delivery has flipped from sell-side to buy-side. Mirror it for shorts.</p>
+      <div class="note"><b>Best when:</b> the CISD candle also breaks a 5m swing — CISD + MSS stacked is a sniper entry.</div>
+    </div>
+
+  </div>
+
+  <div class="callout reveal">
+    <h3>⚠ Confirmation is not optional</h3>
+    <p>
+      A 15m POI is a <b>location</b>, not an <b>entry</b>. Price can slice straight through a zone and keep going.
+      The 5m trigger exists purely to shift the odds: you're no longer guessing that the zone will hold —
+      you're reacting to evidence that it already has.
+    </p>
+  </div>
+</section>
+
+<!-- ============ TRADE MODEL ============ -->
+<section id="model">
+  <div class="sec-num reveal">05 — Execution</div>
+  <h2 class="reveal">The complete trade model</h2>
+  <p class="sec-intro reveal">
+    Same structure both ways. Only the direction flips — and the 4H / 1H bias must agree.
+  </p>
+
+  <div class="models">
+    <div class="model buy reveal">
+      <h3><span class="badge b">Buy</span> Demand POI</h3>
+      <div class="mrow"><div class="lbl">HTF Bias</div><div class="val"><b>4H + 1H must be bullish</b> (HH / HL structure)</div></div>
+      <div class="mrow"><div class="lbl">Zone</div><div class="val">Fresh 15m demand POI, ideally at a 1H / 4H level</div></div>
+      <div class="mrow"><div class="lbl">Trigger</div><div class="val">5m rejection wick + bullish engulfing, or MSS / CISD to the upside</div></div>
+      <div class="mrow"><div class="lbl">Entry</div><div class="val">On the <b>close</b> of the confirmation candle — or the retest of the broken MSS level</div></div>
+      <div class="mrow"><div class="lbl">Stop loss</div><div class="val">Below the <b>zone low</b> plus a small buffer (spread + ATR)</div></div>
+      <div class="mrow"><div class="lbl">Target 1</div><div class="val">Nearest opposing supply POI / recent swing high</div></div>
+      <div class="mrow"><div class="lbl">Target 2</div><div class="val">Higher-timeframe liquidity — 1H / 4H highs</div></div>
+      <div class="mrow"><div class="lbl">Minimum RR</div><div class="val"><b>1 : 2</b> — no setup is worth less</div></div>
+    </div>
+
+    <div class="model sell reveal">
+      <h3><span class="badge s">Sell</span> Supply POI</h3>
+      <div class="mrow"><div class="lbl">HTF Bias</div><div class="val"><b>4H + 1H must be bearish</b> (LH / LL structure)</div></div>
+      <div class="mrow"><div class="lbl">Zone</div><div class="val">Fresh 15m supply POI, ideally at a 1H / 4H level</div></div>
+      <div class="mrow"><div class="lbl">Trigger</div><div class="val">5m rejection wick + bearish engulfing, or MSS / CISD to the downside</div></div>
+      <div class="mrow"><div class="lbl">Entry</div><div class="val">On the <b>close</b> of the confirmation candle — or the retest of the broken MSS level</div></div>
+      <div class="mrow"><div class="lbl">Stop loss</div><div class="val">Above the <b>zone high</b> plus a small buffer (spread + ATR)</div></div>
+      <div class="mrow"><div class="lbl">Target 1</div><div class="val">Nearest opposing demand POI / recent swing low</div></div>
+      <div class="mrow"><div class="lbl">Target 2</div><div class="val">Higher-timeframe liquidity — 1H / 4H lows</div></div>
+      <div class="mrow"><div class="lbl">Minimum RR</div><div class="val"><b>1 : 2</b> — no setup is worth less</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHECKLIST ============ -->
+<section id="checklist">
+  <div class="sec-num reveal">06 — Pre-Trade Filter</div>
+  <h2 class="reveal">The confluence checklist</h2>
+  <p class="sec-intro reveal">
+    Tick every box before you click. If you can't tick at least six, the setup is B-grade at best.
+  </p>
+
+  <div class="check-grid">
+    <label class="check reveal"><input type="checkbox"><span><b>4H bias confirmed.</b> Structure is clearly HH/HL (bullish) or LH/LL (bearish).</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>1H agrees with 4H.</b> Both timeframes point the same direction — no conflict.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Trade direction matches bias.</b> Buying only in a bull bias, selling only in a bear bias.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Fresh zone.</b> The 15m POI has never been touched or mitigated before.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Clean displacement.</b> Price left the base with force and left imbalance behind.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>HTF level.</b> The zone sits at a 1H / 4H key level or order block.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Structure caused.</b> The original move broke a market structure level.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Liquidity swept.</b> Price took out a prior high/low as it entered the zone.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>5m trigger confirmed.</b> Rejection, engulfing, MSS or CISD has printed and closed.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Session timing.</b> Inside London or New York killzone — not the dead Asian chop.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Clear path.</b> No major opposing POI sitting between entry and target.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>Risk defined.</b> Stop distance known and position size already calculated.</span></label>
+    <label class="check reveal"><input type="checkbox"><span><b>RR ≥ 1:2.</b> Target is at least twice the stop distance.</span></label>
+  </div>
+</section>
+
+<!-- ============ INVALIDATION ============ -->
+<section id="invalidation">
+  <div class="sec-num reveal">07 — Risk Rules</div>
+  <h2 class="reveal">Invalidation &amp; management</h2>
+
+  <ul class="rules">
+    <li class="reveal"><span class="k">✕</span><div><b>HTF flip = stop trading that direction.</b> If the 4H structure breaks, every remaining POI in that direction is void. Re-map from scratch.</div></li>
+    <li class="reveal"><span class="k">✕</span><div><b>Zone broken = zone dead.</b> A 5m close decisively through the zone means the orders are gone. Do not re-enter the same zone hoping for a bounce.</div></li>
+    <li class="reveal"><span class="k">✕</span><div><b>No trigger, no trade.</b> If price taps the zone and grinds sideways without a 5m confirmation, you skip it. There will be another setup.</div></li>
+    <li class="reveal"><span class="k">→</span><div><b>Move to breakeven</b> once price closes beyond the first 5m opposing structure — or at 1R, whichever comes first.</div></li>
+    <li class="reveal"><span class="k">→</span><div><b>Take partials at Target 1</b> (opposing POI) and let the remainder run to HTF liquidity with a trailing stop.</div></li>
+    <li class="reveal"><span class="k">→</span><div><b>One trade per zone.</b> If you're stopped out, that zone is spent. Move on to the next marked POI.</div></li>
+    <li class="reveal"><span class="k">→</span><div><b>Risk a fixed percentage</b> — typically 0.5%–1% per idea. Zone quality changes, risk does not.</div></li>
+  </ul>
+</section>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section id="cheat">
+  <div class="sec-num reveal">08 — Quick Reference</div>
+  <h2 class="reveal">One-page cheat sheet</h2>
+
+  <div class="cheat reveal">
+    <div class="cheat-row">
+      <div class="c1">Timeframes</div>
+      <div class="c2"><b>4H</b> major trend · <b>1H</b> trend confirmation · <b>15m</b> POI mapping · <b>5m</b> triggers and entries.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">HTF Bias</div>
+      <div class="c2">4H + 1H must agree. <b>Bullish</b> = HH/HL → buys only. <b>Bearish</b> = LH/LL → sells only. Conflict = stay out.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">The Zone</div>
+      <div class="c2">Base + displacement → box the <b>origin candle</b> body (last opposing candle before the move).</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">The Return</div>
+      <div class="c2">Wait for price to come back and tap the zone. No tap = no setup.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">The Trigger</div>
+      <div class="c2"><b>Rejection</b> · <b>Engulfing</b> · <b>MSS</b> · <b>CISD</b> — at least one must print and <b>close</b> on the 5m.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">Entry</div>
+      <div class="c2">Candle close of the confirmation, or the retest of the broken MSS / CISD level.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">Stop</div>
+      <div class="c2">Beyond the far edge of the zone, plus spread / ATR buffer.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">Target</div>
+      <div class="c2">Opposing POI first, then higher-timeframe liquidity. Minimum <b>1 : 2</b>.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">Kill Switch</div>
+      <div class="c2">5m close through the zone = invalidated. 4H structure flip = whole direction invalidated.</div>
+    </div>
+    <div class="cheat-row">
+      <div class="c1">Edge Lives In</div>
+      <div class="c2"><b>Patience.</b> Most of your screen time is spent waiting for price to arrive — not clicking.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="brand"><span class="dot"></span>My Simple Supply Demand Strategy</div>
+  <p>
+    Educational content only. This is a discretionary framework for studying market structure — not financial advice,
+    and not a guarantee of profit. Supply &amp; demand and liquidity concepts are subjective; two traders will mark
+    two different zones on the same chart. Always backtest on your own instrument and timeframe before risking capital,
+    and never risk more than you can afford to lose.
+  </p>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     CANDLE DATA
+     Format: {o, h, l, c}
+     ============================================================ */
+
+  // ---- 15m SUPPLY scenario ----
+  const supplyData = [
+    {o:92.0,h:93.5,l:91.0,c:93.0},
+    {o:93.0,h:94.5,l:92.5,c:94.0},
+    {o:94.0,h:95.5,l:93.5,c:95.0},
+    {o:95.0,h:96.5,l:94.5,c:96.0},
+    {o:96.0,h:97.0,l:95.5,c:96.5},
+    {o:96.5,h:97.2,l:96.0,c:96.8},
+    {o:96.8,h:97.5,l:96.3,c:97.2},
+    {o:96.2,h:98.4,l:96.0,c:98.0},   // origin candle
+    {o:98.0,h:98.2,l:92.0,c:92.5},   // displacement
+    {o:92.5,h:93.0,l:89.0,c:89.5},
+    {o:89.5,h:90.0,l:86.0,c:86.5},
+    {o:86.5,h:87.5,l:85.5,c:87.0},
+    {o:87.0,h:87.5,l:84.0,c:84.5},
+    {o:84.5,h:85.5,l:83.5,c:85.0},
+    {o:85.0,h:85.2,l:81.0,c:81.5},
+    {o:81.5,h:82.0,l:79.0,c:79.5},
+    {o:79.5,h:80.5,l:78.5,c:80.0},
+    {o:80.0,h:82.0,l:79.5,c:81.5},
+    {o:81.5,h:84.0,l:81.0,c:83.5},
+    {o:83.5,h:86.0,l:83.0,c:85.5},
+    {o:85.5,h:88.0,l:85.0,c:87.5},
+    {o:87.5,h:90.0,l:87.0,c:89.5},
+    {o:89.5,h:93.0,l:89.0,c:92.0},
+    {o:92.0,h:96.0,l:91.5,c:95.5},
+    {o:95.5,h:98.5,l:95.0,c:96.0},   // rejection wick
+    {o:96.0,h:96.5,l:92.0,c:92.5},   // engulfing
+    {o:92.5,h:93.0,l:89.0,c:89.5},
+    {o:89.5,h:90.0,l:86.0,c:86.5},
+    {o:86.5,h:87.0,l:83.0,c:83.5},
+    {o:83.5,h:84.0,l:80.0,c:80.5}
+  ];
+
+  // ---- 15m DEMAND scenario (mirror of supply) ----
+  const demandData = [
+    {o:108.0,h:109.0,l:106.5,c:107.0},
+    {o:107.0,h:107.5,l:105.5,c:106.0},
+    {o:106.0,h:106.5,l:104.5,c:105.0},
+    {o:105.0,h:105.5,l:103.5,c:104.0},
+    {o:104.0,h:104.5,l:103.0,c:103.5},
+    {o:103.5,h:104.0,l:102.8,c:103.2},
+    {o:103.2,h:103.7,l:102.5,c:102.8},
+    {o:103.8,h:104.0,l:101.6,c:102.0},  // origin candle
+    {o:102.0,h:108.0,l:101.8,c:107.5},  // displacement
+    {o:107.5,h:111.0,l:107.0,c:110.5},
+    {o:110.5,h:114.0,l:110.0,c:113.5},
+    {o:113.5,h:114.5,l:112.5,c:113.0},
+    {o:113.0,h:116.0,l:112.5,c:115.5},
+    {o:115.5,h:116.5,l:114.5,c:115.0},
+    {o:115.0,h:119.0,l:114.8,c:118.5},
+    {o:118.5,h:121.0,l:118.0,c:120.5},
+    {o:120.5,h:121.5,l:119.5,c:120.0},
+    {o:120.0,h:120.5,l:118.0,c:118.5},
+    {o:118.5,h:119.0,l:116.0,c:116.5},
+    {o:116.5,h:117.0,l:114.0,c:114.5},
+    {o:114.5,h:115.0,l:112.0,c:112.5},
+    {o:112.5,h:113.0,l:110.0,c:110.5},
+    {o:110.5,h:111.0,l:107.0,c:107.5},
+    {o:107.5,h:108.5,l:104.0,c:104.5},
+    {o:104.5,h:105.0,l:101.5,c:104.0},  // rejection wick
+    {o:104.0,h:108.0,l:103.5,c:107.5},  // engulfing
+    {o:107.5,h:111.0,l:107.0,c:110.5},
+    {o:110.5,h:114.0,l:110.0,c:113.5},
+    {o:113.5,h:117.0,l:113.0,c:116.5},
+    {o:116.5,h:120.0,l:116.0,c:119.5}
+  ];
+
+  /* ============================================================
+     CHART BUILDER
+     ============================================================ */
+
+  function buildChart(data, cfg){
+    const W = 860, H = 430;
+    const padL = 16, padR = 16, padT = 34, padB = 24;
+
+    const highs = data.map(function(d){ return d.h; });
+    const lows  = data.map(function(d){ return d.l; });
+    let max = Math.max.apply(null, highs);
+    let min = Math.min.apply(null, lows);
+    const rng = max - min;
+    max += rng * 0.10;
+    min -= rng * 0.06;
+
+    const pw = W - padL - padR;
+    const ph = H - padT - padB;
+    const step = pw / data.length;
+    const cw = Math.max(4, step * 0.56);
+
+    function Y(p){ return padT + (max - p) / (max - min) * ph; }
+    function X(i){ return padL + i * step + step / 2; }
+
+    let s = '';
+    s += '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img">';
+
+    // horizontal grid
+    for (let g = 0; g <= 4; g++){
+      const y = padT + g * ph / 4;
+      s += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y +
+           '" stroke="rgba(255,255,255,0.045)" stroke-width="1"/>';
+    }
+
+    // zone rectangle
+    if (cfg.zone){
+      const z = cfg.zone;
+      const zx1 = X(z.from) - cw / 2 - 6;
+      const zx2 = W - padR;
+      const zy1 = Y(z.top);
+      const zy2 = Y(z.bottom);
+      s += '<rect x="' + zx1 + '" y="' + zy1 + '" width="' + (zx2 - zx1) + '" height="' + (zy2 - zy1) +
+           '" fill="' + z.fill + '" stroke="' + z.stroke +
+           '" stroke-width="1.2" stroke-dasharray="5 4" rx="2"/>';
+      s += '<text x="' + (zx2 - 12) + '" y="' + ((zy1 + zy2) / 2 + 4) +
+           '" text-anchor="end" fill="' + z.stroke +
+           '" font-size="11" font-weight="700" font-family="Inter, sans-serif" letter-spacing="1.2">' +
+           z.label + '</text>';
+    }
+
+    // candles
+    data.forEach(function(d, i){
+      const bull = d.c >= d.o;
+      const col = bull ? '#00e5a0' : '#ff4d6d';
+      const x = X(i);
+      s += '<line x1="' + x + '" y1="' + Y(d.h) + '" x2="' + x + '" y2="' + Y(d.l) +
+           '" stroke="' + col + '" stroke-width="1.4" opacity="0.85"/>';
+      const yo = Y(Math.max(d.o, d.c));
+      const yc = Y(Math.min(d.o, d.c));
+      s += '<rect x="' + (x - cw / 2) + '" y="' + yo + '" width="' + cw + '" height="' +
+           Math.max(1.5, yc - yo) + '" fill="' + col + '" opacity="0.95" rx="1"/>';
+    });
+
+    // annotations
+    if (cfg.notes){
+      cfg.notes.forEach(function(n){
+        const px = X(n.i);
+        const py = Y(n.p);
+        const tx = px + (n.dx || 0);
+        const ty = py + (n.dy || 0);
+        const col = n.color || '#8a9ab5';
+        s += '<line x1="' + px + '" y1="' + py + '" x2="' + tx + '" y2="' + ty +
+             '" stroke="' + col + '" stroke-width="1" opacity="0.35"/>';
+        s += '<circle cx="' + px + '" cy="' + py + '" r="3" fill="' + col + '"/>';
+        s += '<text x="' + tx + '" y="' + (ty - 8) +
+             '" text-anchor="middle" fill="' + col +
+             '" font-size="11" font-weight="700" font-family="Inter, sans-serif" letter-spacing="1">' +
+             n.text + '</text>';
+      });
+    }
+
+    s += '</svg>';
+    return s;
+  }
+
+  /* ============================================================
+     RENDER CHARTS
+     ============================================================ */
+
+  const supplySvg = buildChart(supplyData, {
+    zone: {
+      from: 7,
+      top: 98.0,
+      bottom: 96.2,
+      fill: 'rgba(255,77,109,0.13)',
+      stroke: '#ff4d6d',
+      label: '15m SUPPLY POI'
+    },
+    notes: [
+      { i: 5,  p: 96.2, dy: 58,  text: 'BASE',              color: '#8a9ab5' },
+      { i: 7,  p: 98.4, dy: -16, text: 'ORIGIN CANDLE',     color: '#5aa9ff' },
+      { i: 13, p: 81.0, dy: 46,  text: 'DISPLACEMENT',      color: '#ff4d6d' },
+      { i: 18, p: 84.0, dy: -46, text: 'RETURN TO POI',     color: '#a78bfa' },
+      { i: 25, p: 92.5, dy: 62,  text: 'REJECTION + ENTRY', color: '#ffb547' }
+    ]
+  });
+
+  const demandSvg = buildChart(demandData, {
+    zone: {
+      from: 7,
+      top: 103.8,
+      bottom: 102.0,
+      fill: 'rgba(0,229,160,0.13)',
+      stroke: '#00e5a0',
+      label: '15m DEMAND POI'
+    },
+    notes: [
+      { i: 5,  p: 103.8, dy: -58, text: 'BASE',              color: '#8a9ab5' },
+      { i: 7,  p: 101.6, dy: 16,  text: 'ORIGIN CANDLE',     color: '#5aa9ff' },
+      { i: 13, p: 119.0, dy: -46, text: 'DISPLACEMENT',      color: '#00e5a0' },
+      { i: 18, p: 116.0, dy: 46,  text: 'RETURN TO POI',     color: '#a78bfa' },
+      { i: 25, p: 107.5, dy: -62, text: 'REJECTION + ENTRY', color: '#ffb547' }
+    ]
+  });
+
+  const elSupply = document.getElementById('chartSupply');
+  const elDemand = document.getElementById('chartDemand');
+  if (elSupply) elSupply.innerHTML = supplySvg;
+  if (elDemand) elDemand.innerHTML = demandSvg;
+
+  /* ============================================================
+     SCROLL REVEAL
+     ============================================================ */
+
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window){
+    const io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e, idx){
+        if (e.isIntersecting){
+          const delay = Math.min(idx * 45, 220);
+          setTimeout(function(){ e.target.classList.add('in'); }, delay);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+
+})();
+</script>
+
+</body>
+</html>
