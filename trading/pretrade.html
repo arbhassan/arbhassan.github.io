@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pre-Trade Checklist · C1 / C2 / C3 + CISD Model</title>
+<meta name="description" content="A fractal multi-timeframe trading model. Three candles, five steps, one checklist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#faf9f7; --bg-2:#f3f1ec;
+  --surface:#ffffff; --surface-2:#f7f6f3;
+  --ink:#101319; --ink-2:#3b414d; --mute:#6d7480;
+  --line:#e5e2db; --line-2:#d2cec5;
+  --bull:#0e9f5c; --bear:#e03131;
+  --go:#0e8a52; --warn:#b07b1a; --stop:#c0392b;
+  --acc:#1f4e79; --gold:#a87c1f;
+  --glow:rgba(31,78,121,.10);
+  --shadow-sm:0 1px 2px rgba(16,19,25,.05), 0 1px 3px rgba(16,19,25,.04);
+  --shadow:0 1px 2px rgba(16,19,25,.05), 0 12px 32px -16px rgba(16,19,25,.22);
+  --shadow-lg:0 2px 4px rgba(16,19,25,.05), 0 28px 60px -28px rgba(16,19,25,.32);
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:14px;
+}
+[data-theme="dark"]{
+  --bg:#0a0d12; --bg-2:#0e1219;
+  --surface:#131820; --surface-2:#181e28;
+  --ink:#eef1f6; --ink-2:#c2c9d4; --mute:#8a93a2;
+  --line:#232a35; --line-2:#333c4a;
+  --bull:#2fbf71; --bear:#f2555a;
+  --go:#3ddc97; --warn:#e3b341; --stop:#ff6b6b;
+  --acc:#7fb2e5; --gold:#e0b64a;
+  --glow:rgba(127,178,229,.10);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 34px -18px rgba(0,0,0,.75);
+  --shadow-lg:0 2px 6px rgba(0,0,0,.45), 0 30px 64px -30px rgba(0,0,0,.9);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  padding-top:env(safe-area-inset-top,0px);
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(720px 420px at 12% -6%, var(--glow), transparent 65%),
+    radial-gradient(640px 380px at 92% 4%, color-mix(in srgb,var(--gold) 9%,transparent), transparent 62%);
+}
+img,svg{max-width:100%}
+a{color:var(--acc);text-decoration:none}
+::selection{background:color-mix(in srgb,var(--acc) 30%,transparent)}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+section{padding:64px 0;position:relative;z-index:1}
+.sec-head{max-width:720px;margin-bottom:34px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--acc);margin:0 0 12px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:22px;height:1.5px;background:var(--acc);border-radius:2px;opacity:.7}
+h1,h2,h3,h4{margin:0;line-height:1.15;letter-spacing:-.022em;font-weight:700}
+h2{font-size:clamp(1.6rem,3.4vw,2.15rem);margin-bottom:12px}
+h3{font-size:1.06rem;letter-spacing:-.012em}
+p{margin:0 0 14px}
+.lede{color:var(--mute);font-size:1.02rem;max-width:64ch;margin:0}
+
+/* ============ NAV ============ */
+.nav{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb,var(--bg) 78%,transparent);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{max-width:1120px;margin:0 auto;padding:0 20px;height:62px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em;color:var(--ink);flex:none}
+.brand svg{width:22px;height:22px;flex:none}
+.brand span{font-size:.94rem;white-space:nowrap}
+.nav-links{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{
+  font-size:.855rem;font-weight:500;color:var(--mute);padding:8px 12px;border-radius:9px;
+  white-space:nowrap;transition:.18s;
+}
+.nav-links a:hover{color:var(--ink);background:var(--surface-2)}
+.theme-btn{
+  flex:none;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:.18s;
+}
+.theme-btn:hover{border-color:var(--line-2);background:var(--surface-2)}
+.theme-btn svg{width:17px;height:17px}
+[data-theme="dark"] .i-sun{display:block}[data-theme="dark"] .i-moon{display:none}
+.i-sun{display:none}.i-moon{display:block}
+
+/* ============ HERO ============ */
+.hero{padding:72px 0 56px}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:44px;align-items:center}
+@media(min-width:940px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:52px}}
+.hero h1{
+  font-size:clamp(2.3rem,6.2vw,3.9rem);font-weight:800;letter-spacing:-.038em;margin-bottom:18px;
+  background:linear-gradient(160deg,var(--ink) 30%,color-mix(in srgb,var(--ink) 62%,var(--acc)));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .lede{font-size:clamp(1rem,2.1vw,1.14rem);color:var(--ink-2);max-width:52ch;margin-bottom:26px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;padding:12px 20px;border-radius:11px;
+  font-size:.92rem;font-weight:600;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);cursor:pointer;transition:.2s;box-shadow:var(--shadow-sm);
+}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:var(--line-2)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.primary:hover{opacity:.9}
+.btn svg{width:15px;height:15px}
+.hero-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:20px;
+  padding:22px 20px 16px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;
+}
+.hero-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(400px 200px at 80% 0%,var(--glow),transparent 70%);
+}
+.hero-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;padding-top:14px;border-top:1px solid var(--line)}
+.hero-legend span{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+/* ============ CARDS / GRID ============ */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr}
+.g3{grid-template-columns:1fr}
+@media(min-width:700px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px;box-shadow:var(--shadow-sm);transition:.22s;
+}
+.card:hover{border-color:var(--line-2);box-shadow:var(--shadow);transform:translateY(-1px)}
+.card h3{margin-bottom:7px}
+.card p{margin:0;font-size:.9rem;color:var(--mute);line-height:1.55}
+.card .num{
+  font-family:var(--mono);font-size:11px;font-weight:600;color:var(--acc);
+  letter-spacing:.1em;margin-bottom:9px;display:block;
+}
+
+/* ============ DIAGRAM CARD ============ */
+.diagram{
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:20px 18px 14px;box-shadow:var(--shadow-sm);
+}
+.diagram h3{font-size:.95rem;text-align:center;margin-bottom:2px}
+.diagram .sub{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);text-align:center;margin-bottom:8px;
+}
+.diagram svg{display:block;width:100%;height:auto}
+
+/* SVG styling */
+.gl{stroke:var(--line-2);stroke-width:1.4;stroke-dasharray:6 5;fill:none}
+.gl-solid{stroke:var(--ink-2);stroke-width:1.6;fill:none;opacity:.75}
+.ck{stroke:var(--ink-2);stroke-width:1.8;stroke-linecap:round;opacity:.85}
+.cb{fill:var(--bull)}
+.cs{fill:var(--bear)}
+.lbl{fill:var(--mute);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.lbl-c{fill:var(--ink-2);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em}
+.mk circle{fill:var(--surface);stroke:var(--line-2);stroke-width:1.4}
+.mk text{fill:var(--ink);font-family:var(--mono);font-size:11px;font-weight:600;text-anchor:middle}
+.note-txt{fill:var(--mute);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ============ TABLE ============ */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sm);-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.885rem;min-width:520px}
+th{
+  text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--mute);font-weight:600;padding:14px 18px;border-bottom:1px solid var(--line);
+  background:var(--surface-2);white-space:nowrap;
+}
+td{padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2);line-height:1.5}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:color-mix(in srgb,var(--acc) 4%,transparent)}
+td strong{color:var(--ink);font-weight:600}
+.tag{
+  display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 8px;border-radius:6px;white-space:nowrap;
+  background:color-mix(in srgb,var(--acc) 13%,transparent);color:var(--acc);
+}
+.tag.bull{background:color-mix(in srgb,var(--bull) 15%,transparent);color:var(--bull)}
+.tag.bear{background:color-mix(in srgb,var(--bear) 15%,transparent);color:var(--bear)}
+.tag.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.tag.stop{background:color-mix(in srgb,var(--stop) 15%,transparent);color:var(--stop)}
+
+/* ============ STEPS ============ */
+.steps{display:grid;gap:12px;counter-reset:s}
+.step{
+  display:flex;gap:18px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm);transition:.22s;position:relative;overflow:hidden;
+}
+.step::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--acc),transparent);opacity:.55;
+}
+.step:hover{border-color:var(--line-2);transform:translateX(2px)}
+.step-n{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--acc);
+  width:38px;height:38px;flex:none;border-radius:11px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--acc) 11%,transparent);border:1px solid color-mix(in srgb,var(--acc) 22%,transparent);
+}
+.step h3{font-size:.98rem;margin-bottom:5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.step p{margin:0;font-size:.885rem;color:var(--mute);line-height:1.55}
+.step .kbd{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,transparent);
+  padding:3px 8px;border-radius:6px;
+}
+
+/* ============ GRADES ============ */
+.grade-card{
+  border-radius:16px;padding:22px;border:1px solid var(--line);background:var(--surface);
+  box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:.22s;
+}
+.grade-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.grade-card::after{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.grade-card.ap::after{background:linear-gradient(90deg,var(--go),transparent)}
+.grade-card.a::after{background:linear-gradient(90deg,var(--warn),transparent)}
+.grade-card.nt::after{background:linear-gradient(90deg,var(--stop),transparent)}
+.grade-card .g{
+  font-family:var(--mono);font-size:1.6rem;font-weight:600;letter-spacing:-.03em;margin-bottom:10px;display:block;
+}
+.grade-card.ap .g{color:var(--go)}
+.grade-card.a .g{color:var(--warn)}
+.grade-card.nt .g{color:var(--stop)}
+.grade-card p{font-size:.875rem;color:var(--mute);margin:0;line-height:1.6}
+.grade-card p + p{margin-top:9px}
+.grade-card b{color:var(--ink-2);font-weight:600}
+
+/* ============ CHECKLIST ============ */
+#checklist{padding-bottom:80px}
+.cl-grid{display:grid;grid-template-columns:1fr;gap:22px;align-items:start}
+@media(min-width:920px){.cl-grid{grid-template-columns:1fr 340px;gap:28px}}
+
+.cl-block{margin-bottom:22px}
+.cl-block > h3{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:11px;display:flex;align-items:center;gap:10px;
+}
+.cl-block > h3::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.check{
+  display:flex;gap:13px;align-items:flex-start;padding:14px 16px;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:8px;cursor:pointer;transition:.18s;box-shadow:var(--shadow-sm);
+}
+.check:hover{border-color:var(--line-2)}
+.check:has(input:checked){border-color:color-mix(in srgb,var(--go) 55%,var(--line));background:color-mix(in srgb,var(--go) 7%,var(--surface))}
+.check input{
+  appearance:none;-webkit-appearance:none;width:21px;height:21px;flex:none;margin:1px 0 0;
+  border:2px solid var(--line-2);border-radius:6px;background:var(--surface);
+  cursor:pointer;position:relative;transition:.16s;
+}
+.check input[type=radio]{border-radius:50%}
+.check input:checked{background:var(--go);border-color:var(--go)}
+.check input[type=checkbox]:checked::after{
+  content:"";position:absolute;left:5.5px;top:1.5px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(43deg);
+}
+.check input[type=radio]:checked::after{
+  content:"";position:absolute;inset:4px;border-radius:50%;background:#fff;
+}
+.check input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.check .txt{font-size:.91rem;font-weight:500;line-height:1.45;color:var(--ink)}
+.check .txt small{display:block;font-weight:400;font-size:.79rem;color:var(--mute);margin-top:3px;line-height:1.45}
+
+/* verdict panel */
+.verdict-col{position:sticky;top:78px}
+@media(max-width:919px){.verdict-col{order:-1;position:sticky;top:70px;z-index:20}}
+.verdict{
+  border-radius:16px;border:1.5px solid var(--line);background:var(--surface);
+  padding:20px;box-shadow:var(--shadow);transition:.28s;position:relative;overflow:hidden;
+}
+.verdict::before{
+  content:"";position:absolute;inset:0;opacity:0;transition:.3s;pointer-events:none;
+  background:radial-gradient(300px 160px at 50% 0%,currentColor,transparent 70%);
+}
+.verdict .vk{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:9px;display:block;
+}
+.verdict .vg{
+  font-size:1.85rem;font-weight:700;letter-spacing:-.035em;line-height:1.1;margin-bottom:7px;
+  transition:.2s;
+}
+.verdict .vr{font-size:.84rem;color:var(--mute);line-height:1.5}
+.verdict.nt{border-color:color-mix(in srgb,var(--stop) 55%,var(--line))}
+.verdict.nt .vg{color:var(--stop)}
+.verdict.a{border-color:color-mix(in srgb,var(--warn) 55%,var(--line))}
+.verdict.a .vg{color:var(--warn)}
+.verdict.ap{border-color:color-mix(in srgb,var(--go) 60%,var(--line))}
+.verdict.ap .vg{color:var(--go)}
+.verdict.ap::before{color:color-mix(in srgb,var(--go) 16%,transparent);opacity:1}
+.verdict.pop{animation:pop .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{0%{transform:scale(.985)}55%{transform:scale(1.012)}100%{transform:scale(1)}}
+
+.meter{margin-top:16px;padding-top:15px;border-top:1px solid var(--line)}
+.meter-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+.meter-bar{height:5px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.meter-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--go));transition:width .35s cubic-bezier(.3,.9,.3,1)}
+
+.reset-btn{
+  width:100%;margin-top:14px;padding:12px;font:inherit;font-size:.875rem;font-weight:600;
+  border-radius:11px;border:1px solid var(--line);background:var(--surface-2);
+  color:var(--ink-2);cursor:pointer;transition:.18s;
+}
+.reset-btn:hover{background:var(--surface);border-color:var(--line-2);color:var(--ink)}
+.reset-btn:active{transform:scale(.985)}
+
+.mini-grades{margin-top:14px;padding:16px;border-radius:14px;border:1px dashed var(--line-2);background:var(--surface-2)}
+.mini-grades h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:10px;font-weight:600}
+.mini-grades ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.mini-grades li{font-size:.79rem;color:var(--mute);line-height:1.5;display:flex;gap:9px;align-items:baseline}
+.mini-grades b{font-family:var(--mono);font-size:.72rem;font-weight:600;flex:none;min-width:60px}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);padding:34px 0 46px;margin-top:20px;position:relative;z-index:1}
+.foot{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+.foot p{margin:0;font-size:.79rem;color:var(--mute);max-width:62ch;line-height:1.6}
+.foot .mono{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(14px)}
+.rv.in{opacity:1;transform:none;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.3,1)}
+@media(prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="3" y="7" width="5" height="11" rx="1.2" fill="var(--bear)"/>
+        <line x1="5.5" y1="3.5" x2="5.5" y2="21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
+        <rect x="15.5" y="4.5" width="5" height="12" rx="1.2" fill="var(--bull)"/>
+        <line x1="18" y1="2" x2="18" y2="20.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
+      </svg>
+      <span>Pre-Trade Checklist</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#model">Model</a>
+      <a href="#pattern">Pattern</a>
+      <a href="#cisd">CISD</a>
+      <a href="#process">Process</a>
+      <a href="#checklist">Checklist</a>
+    </nav>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle colour theme">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">SamNQxFX · Model Playbook</p>
+        <h1>One fractal model.<br>Three candles.<br>Five steps.</h1>
+        <p class="lede">
+          The same three-candle story repeats on every timeframe — a reference candle, a liquidity sweep,
+          and an expansion. Stack Daily, 4H and 1H in agreement, wait for price to reach a real key level,
+          then let a <b>CISD</b> on the matching lower timeframe trigger the entry.
+        </p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#checklist">
+            Open the checklist
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn" href="#pattern">Learn the pattern</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <svg viewBox="0 0 420 300" role="img" aria-label="Bullish C1 C2 C3 pattern with CRH, CRL and key level">
+          <line class="gl" x1="14" y1="62" x2="406" y2="62"/>
+          <text class="lbl" x="14" y="54">CRH</text>
+          <line class="gl" x1="14" y1="172" x2="406" y2="172"/>
+          <text class="lbl" x="14" y="164">CRL</text>
+          <line class="gl-solid" x1="14" y1="242" x2="406" y2="242"/>
+          <text class="lbl" x="14" y="262">Key level</text>
+
+          <!-- C1 bearish -->
+          <line class="ck" x1="92" y1="62" x2="92" y2="172"/>
+          <rect class="cs" x="74" y="80" width="36" height="76" rx="2.5"/>
+          <!-- C2 sweep -->
+          <line class="ck" x1="210" y1="150" x2="210" y2="282"/>
+          <rect class="cb" x="192" y="156" width="36" height="20" rx="2.5"/>
+          <!-- C3 expansion -->
+          <line class="ck" x1="328" y1="34" x2="328" y2="186"/>
+          <rect class="cb" x="310" y="52" width="36" height="112" rx="2.5"/>
+
+          <text class="lbl-c" x="92" y="294" text-anchor="middle">C1</text>
+          <text class="lbl-c" x="210" y="294" text-anchor="middle">C2</text>
+          <text class="lbl-c" x="328" y="294" text-anchor="middle">C3</text>
+          <text class="note-txt" x="210" y="316" text-anchor="middle">sweep</text>
+          <text class="note-txt" x="328" y="24" text-anchor="middle">expansion</text>
+        </svg>
+        <div class="hero-legend">
+          <span><i class="dot" style="background:var(--bull)"></i>Bullish body</span>
+          <span><i class="dot" style="background:var(--bear)"></i>Bearish body</span>
+          <span><i class="dot" style="background:var(--ink-2)"></i>Wicks</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MODEL ================= -->
+<section id="model">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">01 · The Model</p>
+      <h2>Bias first. Level second. Trigger last.</h2>
+      <p class="lede">
+        Nothing about this model is discretionary in the moment. Each timeframe answers one question,
+        and if any answer is missing, there is no trade. That is the whole edge.
+      </p>
+    </div>
+
+    <div class="grid g3">
+      <div class="card rv">
+        <span class="num">FRACTAL</span>
+        <h3>The same pattern everywhere</h3>
+        <p>C1 / C2 / C3 repeats identically on Daily, 4H, 1H and below. You are never learning a new setup — only reading the same one at a different scale.</p>
+      </div>
+      <div class="card rv">
+        <span class="num">BIAS</span>
+        <h3>Daily C2 sets direction</h3>
+        <p>Did the Daily candle sweep PDH or PDL and close back inside? A sweep with SMT on a correlated pair counts too. If it hasn't happened, you wait.</p>
+      </div>
+      <div class="card rv">
+        <span class="num">LEVEL</span>
+        <h3>No key level, no trade</h3>
+        <p>Price must be sitting at a Daily FVG, 4H OB, 4H FVG, 4H swing high/low, or a 1H FVG with higher-timeframe order flow behind it.</p>
+      </div>
+      <div class="card rv">
+        <span class="num">TRIGGER</span>
+        <h3>CISD on the matching LTF</h3>
+        <p>A change in state of delivery confirms the shift. Daily → 1H, 4H → 15m, 1H → 5m. No CISD, no entry — regardless of how good the level looks.</p>
+      </div>
+      <div class="card rv">
+        <span class="num">MANAGE</span>
+        <h3>Hold, then protect</h3>
+        <p>Hold to stop loss, or to the recent range high/low sweep, then move to breakeven. Retracements are part of the plan, not a reason to panic.</p>
+      </div>
+      <div class="card rv">
+        <span class="num">FILTER</span>
+        <h3>Context and timing</h3>
+        <p>DXY in sync, no high-impact news, and extra care around 3am and 8am when manipulation is most likely. Don't chase the first move.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PATTERN ================= -->
+<section id="pattern" style="background:var(--bg-2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">02 · The Pattern</p>
+      <h2>C1, C2, C3 — the three-candle story</h2>
+      <p class="lede">
+        A big reference candle defines the range. A small candle with a long wick raids one side of it
+        and closes back inside — that is the manipulation and it sets the bias. Then a big candle expands
+        away from the swept side. White body = bullish. Black body = bearish. Wicks are always black.
+      </p>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:26px">
+      <div class="diagram rv">
+        <h3>Bullish</h3>
+        <p class="sub">C2 sweeps CRL · C3 expands up</p>
+        <svg viewBox="0 0 420 340" role="img" aria-label="Bullish C1 C2 C3 diagram">
+          <line class="gl" x1="14" y1="70" x2="406" y2="70"/>
+          <text class="lbl" x="14" y="62">CRH</text>
+          <line class="gl" x1="14" y1="180" x2="406" y2="180"/>
+          <text class="lbl" x="14" y="172">CRL</text>
+          <line class="gl-solid" x1="14" y1="250" x2="406" y2="250"/>
+          <text class="lbl" x="14" y="270">Key level</text>
+
+          <line class="ck" x1="92" y1="70" x2="92" y2="180"/>
+          <rect class="cs" x="74" y="86" width="36" height="80" rx="2.5"/>
+
+          <line class="ck" x1="210" y1="150" x2="210" y2="292"/>
+          <rect class="cb" x="192" y="158" width="36" height="20" rx="2.5"/>
+
+          <line class="ck" x1="328" y1="40" x2="328" y2="192"/>
+          <rect class="cb" x="310" y="56" width="36" height="112" rx="2.5"/>
+
+          <text class="lbl-c" x="92" y="308" text-anchor="middle">C1</text>
+          <text class="lbl-c" x="210" y="308" text-anchor="middle">C2</text>
+          <text class="lbl-c" x="328" y="308" text-anchor="middle">C3</text>
+          <text class="note-txt" x="210" y="328" text-anchor="middle">sweep</text>
+          <text class="note-txt" x="328" y="30" text-anchor="middle">expansion</text>
+        </svg>
+      </div>
+
+      <div class="diagram rv">
+        <h3>Bearish</h3>
+        <p class="sub">C2 sweeps CRH · C3 expands down</p>
+        <svg viewBox="0 0 420 340" role="img" aria-label="Bearish C1 C2 C3 diagram">
+          <line class="gl-solid" x1="14" y1="90" x2="406" y2="90"/>
+          <text class="lbl" x="14" y="80">Key level</text>
+          <line class="gl" x1="14" y1="170" x2="406" y2="170"/>
+          <text class="lbl" x="14" y="162">CRH</text>
+          <line class="gl" x1="14" y1="280" x2="406" y2="280"/>
+          <text class="lbl" x="14" y="272">CRL</text>
+
+          <line class="ck" x1="92" y1="170" x2="92" y2="280"/>
+          <rect class="cb" x="74" y="186" width="36" height="80" rx="2.5"/>
+
+          <line class="ck" x1="210" y1="58" x2="210" y2="200"/>
+          <rect class="cs" x="192" y="170" width="36" height="20" rx="2.5"/>
+
+          <line class="ck" x1="328" y1="158" x2="328" y2="310"/>
+          <rect class="cs" x="310" y="174" width="36" height="112" rx="2.5"/>
+
+          <text class="lbl-c" x="92" y="326" text-anchor="middle">C1</text>
+          <text class="lbl-c" x="210" y="326" text-anchor="middle">C2</text>
+          <text class="lbl-c" x="328" y="326" text-anchor="middle">C3</text>
+          <text class="note-txt" x="210" y="48" text-anchor="middle">sweep</text>
+          <text class="note-txt" x="328" y="330" text-anchor="middle">expansion</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="rv">
+      <h3 style="margin-bottom:12px;font-size:1.02rem">What each candle does</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Candle</th><th>Role</th><th>What it means</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>C1</strong></td>
+              <td><span class="tag">Reference</span></td>
+              <td>A big-bodied candle. Its high and low become <strong>CRH</strong> and <strong>CRL</strong> — the range that C2 will raid.</td>
+            </tr>
+            <tr>
+              <td><strong>C2</strong></td>
+              <td><span class="tag warn">Manipulation</span></td>
+              <td>Small body, long wick. Sweeps CRH or CRL and closes back inside the range. <strong>This sets the bias.</strong></td>
+            </tr>
+            <tr>
+              <td><strong>C3</strong></td>
+              <td><span class="tag bull">Expansion</span></td>
+              <td>Big body moving in the direction of the bias, away from the swept side. The move you want to be positioned for.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="rv" style="margin-top:34px">
+      <h3 style="margin-bottom:12px;font-size:1.02rem">How it stacks across timeframes</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Timeframe</th><th>What you take from it</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Daily</strong></td>
+              <td>Daily C2: did it sweep PDH/PDL (or sweep with SMT)? That gives the bias.</td>
+            </tr>
+            <tr>
+              <td><strong>4H</strong></td>
+              <td>Where we are inside the Daily move. Key levels: 4H OB, 4H FVG, 4H swing high/low.</td>
+            </tr>
+            <tr>
+              <td><strong>1H</strong></td>
+              <td>Refines the 4H. 1H FVG with HTF order flow; checks 4H / 1H alignment.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CISD ================= -->
+<section id="cisd">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">03 · The Trigger</p>
+      <h2>CISD — Change In State of Delivery</h2>
+      <p class="lede">
+        CISD is your permission slip. Price must first reach a valid key level and sweep liquidity there.
+        Then it has to close beyond the run of opposing candles that created the move into the level.
+        That close is the shift in delivery — enter on it, or on the pullback into it.
+      </p>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:26px">
+      <div class="diagram rv">
+        <h3>Bullish CISD</h3>
+        <p class="sub">sweep low → close above → entry</p>
+        <svg viewBox="0 0 440 340" role="img" aria-label="Bullish CISD diagram">
+          <line class="gl" x1="14" y1="120" x2="426" y2="120"/>
+          <text class="lbl" x="14" y="112">CISD level</text>
+
+          <line class="ck" x1="60" y1="100" x2="60" y2="140"/>
+          <rect class="cb" x="43" y="108" width="34" height="24" rx="2.5"/>
+
+          <line class="ck" x1="115" y1="88" x2="115" y2="150"/>
+          <rect class="cs" x="98" y="96" width="34" height="46" rx="2.5"/>
+
+          <line class="ck" x1="170" y1="110" x2="170" y2="200"/>
+          <rect class="cs" x="153" y="120" width="34" height="70" rx="2.5"/>
+
+          <line class="ck" x1="225" y1="155" x2="225" y2="236"/>
+          <rect class="cs" x="208" y="165" width="34" height="61" rx="2.5"/>
+
+          <line class="ck" x1="280" y1="190" x2="280" y2="292"/>
+          <rect class="cs" x="263" y="200" width="34" height="40" rx="2.5"/>
+
+          <line class="ck" x1="335" y1="70" x2="335" y2="256"/>
+          <rect class="cb" x="318" y="84" width="34" height="156" rx="2.5"/>
+
+          <line class="ck" x1="390" y1="58" x2="390" y2="112"/>
+          <rect class="cb" x="373" y="68" width="34" height="32" rx="2.5"/>
+
+          <g class="mk"><circle cx="280" cy="312" r="11"/><text x="280" y="316">1</text></g>
+          <g class="mk"><circle cx="335" cy="278" r="11"/><text x="335" y="282">2</text></g>
+          <g class="mk"><circle cx="390" cy="40" r="11"/><text x="390" y="44">3</text></g>
+        </svg>
+      </div>
+
+      <div class="diagram rv">
+        <h3>Bearish CISD</h3>
+        <p class="sub">sweep high → close below → entry</p>
+        <svg viewBox="0 0 440 340" role="img" aria-label="Bearish CISD diagram">
+          <line class="gl" x1="14" y1="200" x2="426" y2="200"/>
+          <text class="lbl" x="14" y="192">CISD level</text>
+
+          <line class="ck" x1="60" y1="170" x2="60" y2="216"/>
+          <rect class="cs" x="43" y="178" width="34" height="30" rx="2.5"/>
+
+          <line class="ck" x1="115" y1="160" x2="115" y2="226"/>
+          <rect class="cb" x="98" y="168" width="34" height="50" rx="2.5"/>
+
+          <line class="ck" x1="170" y1="130" x2="170" y2="216"/>
+          <rect class="cb" x="153" y="140" width="34" height="66" rx="2.5"/>
+
+          <line class="ck" x1="225" y1="100" x2="225" y2="182"/>
+          <rect class="cb" x="208" y="110" width="34" height="60" rx="2.5"/>
+
+          <line class="ck" x1="280" y1="54" x2="280" y2="142"/>
+          <rect class="cb" x="263" y="62" width="34" height="56" rx="2.5"/>
+
+          <line class="ck" x1="335" y1="90" x2="335" y2="266"/>
+          <rect class="cs" x="318" y="100" width="34" height="152" rx="2.5"/>
+
+          <line class="ck" x1="390" y1="234" x2="390" y2="292"/>
+          <rect class="cs" x="373" y="244" width="34" height="34" rx="2.5"/>
+
+          <g class="mk"><circle cx="280" cy="36" r="11"/><text x="280" y="40">1</text></g>
+          <g class="mk"><circle cx="335" cy="288" r="11"/><text x="335" y="292">2</text></g>
+          <g class="mk"><circle cx="390" cy="312" r="11"/><text x="390" y="316">3</text></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="rv">
+        <h3 style="margin-bottom:12px;font-size:1.02rem">Reading it</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Step</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><td><strong>1. Key level</strong></td><td>Price reaches a valid key level and sweeps liquidity there.</td></tr>
+              <tr><td><strong>2. CISD</strong></td><td>
+                <span class="tag bear">Bearish</span> Price closes <strong>below</strong> the recent bullish candles (the open of that run).<br><br>
+                <span class="tag bull">Bullish</span> Price closes <strong>above</strong> the recent bearish candles (the open of that run).
+              </td></tr>
+              <tr><td><strong>3. Entry</strong></td><td>Enter on the CISD close or the pullback into it. Stop loss goes <strong>beyond the sweep</strong>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rv">
+        <h3 style="margin-bottom:12px;font-size:1.02rem">Which entry timeframe for which candles</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>C1/C2/C3 on</th><th>Entry timeframe</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Daily</strong></td><td><span class="tag">1H CISD</span></td><td>Daily C2 sweep sets the bias</td></tr>
+              <tr><td><strong>4H</strong></td><td><span class="tag">15m CISD</span></td><td>Valid CISD is mandatory</td></tr>
+              <tr><td><strong>1H</strong></td><td><span class="tag">5m CISD</span></td><td>1H level = FVG only (unless 4H &amp; 1H swing overlap)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROFILES ================= -->
+<section id="profiles" style="background:var(--bg-2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">04 · Price Action</p>
+      <h2>Reading the profiles</h2>
+      <p class="lede">
+        Before the pattern completes, you read the profile: is price rejecting a level or accepting
+        through it? Rejection leaves wicks. Acceptance leaves closes.
+      </p>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:26px">
+      <div class="diagram rv">
+        <h3>Bearish profile</h3>
+        <p class="sub">Rejecting highs + breaking lows</p>
+        <svg viewBox="0 0 340 190" role="img" aria-label="Bearish profile diagram">
+          <line class="gl" x1="12" y1="66" x2="328" y2="66"/>
+          <text class="lbl" x="12" y="58">Leg high</text>
+          <line class="gl" x1="12" y1="132" x2="328" y2="132"/>
+          <text class="lbl" x="12" y="124">Leg low</text>
+
+          <line class="ck" x1="52" y1="112" x2="52" y2="152"/>
+          <rect class="cb" x="38" y="120" width="28" height="24" rx="2"/>
+
+          <line class="ck" x1="98" y1="98" x2="98" y2="140"/>
+          <rect class="cb" x="84" y="106" width="28" height="26" rx="2"/>
+
+          <line class="ck" x1="144" y1="82" x2="144" y2="124"/>
+          <rect class="cb" x="130" y="90" width="28" height="26" rx="2"/>
+
+          <line class="ck" x1="190" y1="52" x2="190" y2="110"/>
+          <rect class="cs" x="176" y="74" width="28" height="28" rx="2"/>
+
+          <line class="ck" x1="236" y1="88" x2="236" y2="134"/>
+          <rect class="cs" x="222" y="92" width="28" height="34" rx="2"/>
+
+          <line class="ck" x1="282" y1="106" x2="282" y2="172"/>
+          <rect class="cs" x="268" y="112" width="28" height="52" rx="2"/>
+
+          <g class="mk"><circle cx="190" cy="38" r="10"/><text x="190" y="42">1</text></g>
+          <g class="mk"><circle cx="282" cy="180" r="10"/><text x="282" y="184">2</text></g>
+        </svg>
+      </div>
+
+      <div class="diagram rv">
+        <h3>Bullish profile</h3>
+        <p class="sub">Rejecting lows + breaking highs</p>
+        <svg viewBox="0 0 340 190" role="img" aria-label="Bullish profile diagram">
+          <line class="gl" x1="12" y1="58" x2="328" y2="58"/>
+          <text class="lbl" x="12" y="50">Leg high</text>
+          <line class="gl" x1="12" y1="124" x2="328" y2="124"/>
+          <text class="lbl" x="12" y="116">Leg low</text>
+
+          <line class="ck" x1="52" y1="40" x2="52" y2="80"/>
+          <rect class="cs" x="38" y="46" width="28" height="26" rx="2"/>
+
+          <line class="ck" x1="98" y1="52" x2="98" y2="94"/>
+          <rect class="cs" x="84" y="58" width="28" height="28" rx="2"/>
+
+          <line class="ck" x1="144" y1="68" x2="144" y2="110"/>
+          <rect class="cs" x="130" y="74" width="28" height="28" rx="2"/>
+
+          <line class="ck" x1="190" y1="94" x2="190" y2="150"/>
+          <rect class="cb" x="176" y="100" width="28" height="26" rx="2"/>
+
+          <line class="ck" x1="236" y1="66" x2="236" y2="108"/>
+          <rect class="cb" x="222" y="72" width="28" height="28" rx="2"/>
+
+          <line class="ck" x1="282" y1="30" x2="282" y2="94"/>
+          <rect class="cb" x="268" y="38" width="28" height="48" rx="2"/>
+
+          <g class="mk"><circle cx="190" cy="162" r="10"/><text x="190" y="166">1</text></g>
+          <g class="mk"><circle cx="282" cy="18" r="10"/><text x="282" y="22">2</text></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="rv">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Rejecting</strong></td><td>A wick above the recent leg highs (or below the recent leg lows): the level is tested, not accepted.</td></tr>
+            <tr><td><strong>Breaking</strong></td><td>Price then trades through the other side of the leg: the lows (bearish) or the highs (bullish).</td></tr>
+            <tr><td><strong>Close above / below</strong></td><td>Closes above the recent leg highs = higher prices. Closes below the recent leg lows = lower prices.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROCESS ================= -->
+<section id="process">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">05 · The Process</p>
+      <h2>Five steps, in order, every time</h2>
+      <p class="lede">Skip a step and you are no longer trading the model — you are trading a feeling.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step rv">
+        <div class="step-n">01</div>
+        <div>
+          <h3>Daily <span class="kbd">Bias</span></h3>
+          <p>Read C1 / C2. Has Daily C2 swept PDH / PDL? A sweep with SMT also counts. If not, wait for the sweep based on current order flow.</p>
+        </div>
+      </div>
+      <div class="step rv">
+        <div class="step-n">02</div>
+        <div>
+          <h3>4H / 1H <span class="kbd">Alignment</span></h3>
+          <p>The 4H and 1H C1 / C2 / C3 should agree with the Daily bias. DXY should be in sync with the direction you are about to trade.</p>
+        </div>
+      </div>
+      <div class="step rv">
+        <div class="step-n">03</div>
+        <div>
+          <h3>Key level <span class="kbd">Location</span></h3>
+          <p>Price must be at one: Daily FVG, 4H OB, 4H FVG, 4H swing high/low, or 1H FVG with HTF order flow. <strong>No key level, no trade.</strong></p>
+        </div>
+      </div>
+      <div class="step rv">
+        <div class="step-n">04</div>
+        <div>
+          <h3>LTF entry <span class="kbd">Trigger</span></h3>
+          <p>Wait for CISD on the matching lower timeframe: 1H for Daily, 15m for 4H, 5m for 1H. <strong>No CISD, no entry.</strong></p>
+        </div>
+      </div>
+      <div class="step rv">
+        <div class="step-n">05</div>
+        <div>
+          <h3>Execute &amp; manage <span class="kbd">Discipline</span></h3>
+          <p>Hold to SL, or to the recent range low/high sweep, then move to breakeven. Trust the system.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RULES ================= -->
+<section id="rules" style="background:var(--bg-2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">06 · Rules</p>
+      <h2>The non-negotiables</h2>
+      <p class="lede">Each of these is a filter. Together they are the reason the checklist exists.</p>
+    </div>
+
+    <div class="grid g3">
+      <div class="card rv"><span class="num">RULE 01</span><h3>Key level present</h3><p>Daily FVG, 4H OB, 4H FVG, 4H swing H/L, or 1H FVG with HTF order flow. No key level, no trade.</p></div>
+      <div class="card rv"><span class="num">RULE 02</span><h3>Daily C2 swept PDH / PDL</h3><p>A sweep with SMT also counts. If it hasn't happened yet, wait for the sweep based on current order flow.</p></div>
+      <div class="card rv"><span class="num">RULE 03</span><h3>DXY in sync</h3><p>DXY confirms the direction of the trade. If it disagrees, the setup drops a grade.</p></div>
+      <div class="card rv"><span class="num">RULE 04</span><h3>Valid CISD on the matching LTF</h3><p>Daily → 1H, 4H → 15m, 1H → 5m. The entry model is mandatory.</p></div>
+      <div class="card rv"><span class="num">RULE 05</span><h3>Time check</h3><p>You can trade any time, but be careful around 3am and 8am — manipulation times. Don't chase the first move.</p></div>
+      <div class="card rv"><span class="num">RULE 06</span><h3>No high-impact news</h3><p>Avoid trading when high-impact news is due.</p></div>
+      <div class="card rv"><span class="num">RULE 07</span><h3>Rejection block (if used)</h3><p>4H / 1H rejection blocks only count with SMT on a correlated pair.</p></div>
+      <div class="card rv"><span class="num">RULE 08</span><h3>1H level is FVG</h3><p>Not a swing high/low — unless the 4H and 1H swings overlap.</p></div>
+      <div class="card rv"><span class="num">RULE 09</span><h3>Trade management</h3><p>Hold to SL or to the recent range low/high sweep, then move to BE. Anticipate retracements. Trust the system.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GRADES ================= -->
+<section id="grades">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">07 · Grades</p>
+      <h2>How good is this setup, really?</h2>
+      <p class="lede">Grade the trade before you take it. A+ means full confluence. A means it works but something is missing. No trade means exactly that.</p>
+    </div>
+
+    <div class="grid g3">
+      <div class="grade-card ap rv">
+        <span class="g">A+</span>
+        <p><b>Full confluence.</b></p>
+        <p>Daily FVG, 4H OB or 4H FVG, or a 4H swing level with 4H + 1H overlap — plus Daily C2 swept, DXY in sync, and a valid CISD on the matching lower timeframe.</p>
+      </div>
+      <div class="grade-card a rv">
+        <span class="g">A</span>
+        <p><b>Hard stops pass, but softer.</b></p>
+        <p>The level is a 1H FVG or a rejection block, or DXY is not in sync, or Daily C2 hasn't swept yet. Tradeable, but with reduced conviction and size.</p>
+      </div>
+      <div class="grade-card nt rv">
+        <span class="g">No trade</span>
+        <p><b>Stand down.</b></p>
+        <p>No key level, no CISD, high-impact news due, or DXY out of sync <em>and</em> Daily C2 unswept together. There is always another setup.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHECKLIST ================= -->
+<section id="checklist" style="background:var(--bg-2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <p class="eyebrow">08 · Live Checklist</p>
+      <h2>Run the checklist before every trade</h2>
+      <p class="lede">Work top to bottom. The verdict updates as you go — it will not let you talk yourself into a trade the model doesn't support.</p>
+    </div>
+
+    <div class="cl-grid">
+      <!-- INPUTS -->
+      <div class="cl-inputs">
+
+        <div class="cl-block rv">
+          <h3>Key level — pick one</h3>
+          <label class="check">
+            <input type="radio" name="lv" value="strong">
+            <span class="txt">Daily FVG / 4H OB / 4H FVG<small>Strongest location. Full confluence candidate.</small></span>
+          </label>
+          <label class="check">
+            <input type="radio" name="lv" value="strong">
+            <span class="txt">4H swing high / low<small>Only with 4H + 1H swing overlap.</small></span>
+          </label>
+          <label class="check">
+            <input type="radio" name="lv" value="weak">
+            <span class="txt">1H FVG<small>Only with HTF order flow / trend.</small></span>
+          </label>
+          <label class="check">
+            <input type="radio" name="lv" value="weak">
+            <span class="txt">4H / 1H rejection block<small>Only with SMT on a correlated pair.</small></span>
+          </label>
+        </div>
+
+        <div class="cl-block rv">
+          <h3>Hard stops — all required</h3>
+          <label class="check">
+            <input type="checkbox" class="js-hard">
+            <span class="txt">Level conditions above are met<small>The chosen level actually satisfies its own rule.</small></span>
+          </label>
+          <label class="check">
+            <input type="checkbox" class="js-hard">
+            <span class="txt">Valid CISD on 15m / 5m<small>For the 4H or 1H level. No CISD, no entry.</small></span>
+          </label>
+          <label class="check">
+            <input type="checkbox" class="js-hard">
+            <span class="txt">No high-impact news<small>Nothing scheduled that can override the setup.</small></span>
+          </label>
+        </div>
+
+        <div class="cl-block rv">
+          <h3>Context</h3>
+          <label class="check">
+            <input type="checkbox" id="chk-dxy">
+            <span class="txt">DXY in sync<small>Dollar confirms the direction of the trade.</small></span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="chk-c2">
+            <span class="txt">Daily C2 swept PDH / PDL<small>If not, wait for the sweep based on current order flow.</small></span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="chk-time">
+            <span class="txt">Careful at 3am / 8am<small>Expect manipulation. Don't chase the first move.</small></span>
+          </label>
+        </div>
+
+        <div class="cl-block rv">
+          <h3>Management</h3>
+          <label class="check">
+            <input type="checkbox" id="chk-mgmt1">
+            <span class="txt">Hold to SL, or to the recent range high/low sweep, then BE</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="chk-mgmt2">
+            <span class="txt">Expect retracements. Trust the system.</span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- VERDICT -->
+      <div class="verdict-col">
+        <div class="verdict nt" id="verdict" role="status" aria-live="polite">
+          <span class="vk">Verdict</span>
+          <div class="vg" id="verdictGrade">No trade</div>
+          <div class="vr" id="verdictReason">Pick a key level to begin.</div>
+
+          <div class="meter">
+            <div class="meter-top">
+              <span>Hard stops</span>
+              <span id="meterLabel">0 / 3</span>
+            </div>
+            <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+          </div>
+
+          <button class="reset-btn" id="resetBtn">Reset for next trade</button>
+        </div>
+
+        <div class="mini-grades">
+          <h4>Grade reference</h4>
+          <ul>
+            <li><b style="color:var(--go)">A+</b><span>Daily FVG / 4H OB / 4H FVG / 4H swing + Daily C2 sweep + DXY in sync + valid CISD.</span></li>
+            <li><b style="color:var(--warn)">A</b><span>Hard stops pass, but the level is a 1H FVG or rejection block, or DXY / C2 is missing.</span></li>
+            <li><b style="color:var(--stop)">No trade</b><span>No level, no CISD, news, or DXY out of sync and C2 unswept together.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap foot">
+    <p>
+      <strong style="color:var(--ink-2)">Pre-Trade Checklist</strong> — a disciplined reading of the C1 / C2 / C3
+      and CISD model. Educational tool only. Not financial advice. Trade your own plan and manage your own risk.
+    </p>
+    <span class="mono">Same model · every timeframe</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- THEME ---------- */
+  var root = document.documentElement;
+  var stored = null;
+  try { stored = localStorage.getItem('ptc-theme'); } catch(e){}
+  if (stored) {
+    root.setAttribute('data-theme', stored);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    root.setAttribute('data-theme', 'light');
+  }
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('ptc-theme', next); } catch(e){}
+  });
+
+  /* ---------- CHECKLIST LOGIC ---------- */
+  var verdict   = document.getElementById('verdict');
+  var vGrade    = document.getElementById('verdictGrade');
+  var vReason   = document.getElementById('verdictReason');
+  var meterFill = document.getElementById('meterFill');
+  var meterLbl  = document.getElementById('meterLabel');
+  var hardEls   = Array.prototype.slice.call(document.querySelectorAll('.js-hard'));
+  var dxyEl     = document.getElementById('chk-dxy');
+  var c2El      = document.getElementById('chk-c2');
+  var lastGrade = null;
+
+  function calc(){
+    var lvEl  = document.querySelector('input[name="lv"]:checked');
+    var done  = hardEls.filter(function(x){ return x.checked; }).length;
+    var total = hardEls.length;
+    var hardOK = done === total;
+    var dxy = dxyEl.checked;
+    var c2  = c2El.checked;
+
+    /* meter */
+    meterLbl.textContent = done + ' / ' + total;
+    meterFill.style.width = (total ? (done / total * 100) : 0) + '%';
+
+    /* grade */
+    var cls, grade, reason;
+
+    if (!lvEl) {
+      cls = 'nt'; grade = 'No trade';
+      reason = 'Pick a key level first — ' + done + '/' + total + ' hard stops done.';
+    } else if (!hardOK) {
+      cls = 'nt'; grade = 'No trade';
+      reason = 'Hard stops incomplete: ' + done + '/' + total + ' done. Clear all three before considering entry.';
+    } else if (!dxy && !c2) {
+      cls = 'nt'; grade = 'No trade';
+      reason = 'Hard stops pass, but DXY is out of sync and Daily C2 is unswept. Stand down.';
+    } else if (lvEl.value === 'strong' && dxy && c2) {
+      cls = 'ap'; grade = 'A+ setup';
+      reason = 'All confluence present — strong level, DXY in sync, Daily C2 swept, CISD valid.';
+    } else {
+      cls = 'a'; grade = 'A setup';
+      if (!dxy)      reason = 'Hard stops pass, but DXY is not in sync. Reduced conviction.';
+      else if (!c2)  reason = 'Hard stops pass, but Daily C2 has not swept yet. Wait for the sweep.';
+      else           reason = 'Hard stops pass, but this is a weaker level type (1H FVG or rejection block).';
+    }
+
+    verdict.className = 'verdict ' + cls;
+    vGrade.textContent = grade;
+    vReason.textContent = reason;
+
+    if (lastGrade !== null && lastGrade !== grade) {
+      verdict.classList.remove('pop');
+      void verdict.offsetWidth;
+      verdict.classList.add('pop');
+    }
+    lastGrade = grade;
+  }
+
+  document.getElementById('checklist').addEventListener('change', calc);
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#checklist input'), function(x){
+      x.checked = false;
+    });
+    calc();
+    window.scrollTo({ top: document.getElementById('checklist').offsetTop - 70, behavior: 'smooth' });
+  });
+
+  calc();
+
+  /* ---------- SCROLL REVEAL ---------- */
+  var revealEls = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    revealEls.forEach(function(el, i){
+      el.style.transitionDelay = Math.min(i % 6, 5) * 45 + 'ms';
+      io.observe(el);
+    });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
